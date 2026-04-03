@@ -22,41 +22,81 @@ select{background:#2d3748;border:1px solid #4a5568;color:#e2e8f0;padding:7px 14p
 select:hover{border-color:#b794f4;}
 .reset-btn{background:transparent;border:1px solid #4a5568;color:#a0aec0;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;}
 .reset-btn:hover{border-color:#b794f4;color:#b794f4;}
+.tab-bar{background:#1a1f2e;border-bottom:1px solid #2d3748;padding:0 32px;display:flex;gap:0;}
+.tab{padding:14px 22px;font-size:13px;font-weight:600;color:#718096;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.tab:hover{color:#e2e8f0;}
+.tab.active{color:#b794f4;border-bottom-color:#b794f4;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
 main{padding:28px 32px;}
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
-.kpi-card{background:linear-gradient(135deg,#1a1f2e,#1e2535);border:1px solid #2d3748;border-radius:12px;padding:20px 24px;position:relative;overflow:hidden;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
+.kpi-card{background:linear-gradient(135deg,#1a1f2e,#1e2535);border:1px solid #2d3748;border-radius:12px;padding:16px 20px;position:relative;overflow:hidden;}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 .kpi-card.pink::before{background:linear-gradient(90deg,#f093fb,#f5576c);}
 .kpi-card.teal::before{background:linear-gradient(90deg,#4fd1c5,#38b2ac);}
 .kpi-card.purple::before{background:linear-gradient(90deg,#b794f4,#9f7aea);}
 .kpi-card.yellow::before{background:linear-gradient(90deg,#f6e05e,#d69e2e);}
-.kpi-label{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
-.kpi-value{font-size:28px;font-weight:700;color:#f7fafc;margin-bottom:6px;}
-.kpi-delta{font-size:12px;}
+.kpi-card.blue::before{background:linear-gradient(90deg,#63b3ed,#4299e1);}
+.kpi-label{font-size:10px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.kpi-value{font-size:22px;font-weight:700;color:#f7fafc;margin-bottom:4px;}
+.kpi-delta{font-size:11px;}
 .kpi-delta.up{color:#48bb78;}
 .kpi-delta.down{color:#fc8181;}
-.kpi-icon{position:absolute;top:20px;right:20px;font-size:24px;opacity:.15;}
 .charts-row{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+.charts-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;}
 .charts-row-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
 .card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:22px 24px;}
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
 .card-title{font-size:14px;font-weight:600;color:#e2e8f0;}
 .card-subtitle{font-size:11px;color:#718096;margin-top:2px;}
-.card-badge{font-size:11px;background:#2d3748;color:#a0aec0;padding:3px 10px;border-radius:12px;}
-canvas{max-height:220px;}
-.funnel{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-.funnel-row{display:flex;align-items:center;gap:12px;}
-.funnel-label{font-size:12px;color:#a0aec0;width:100px;flex-shrink:0;}
-.funnel-bar-wrap{flex:1;background:#2d3748;border-radius:4px;height:28px;position:relative;}
-.funnel-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:600;color:#fff;transition:width .4s;}
-.funnel-val{font-size:12px;color:#a0aec0;width:60px;text-align:right;flex-shrink:0;}
-.channel-table{width:100%;border-collapse:collapse;margin-top:4px;}
-.channel-table th{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:1px solid #2d3748;}
-.channel-table td{font-size:13px;color:#cbd5e0;padding:10px 10px;border-bottom:1px solid #1e2535;}
-.channel-table tr:last-child td{border-bottom:none;}
-.channel-table tr:hover td{background:#202637;}
-.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
-@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}.charts-row,.charts-row-2{grid-template-columns:1fr}}
+.card-badge{font-size:11px;background:#2d3748;color:#a0aec0;padding:3px 10px;border-radius:12px;white-space:nowrap;}
+canvas{max-height:240px;}
+
+/* Channel cards */
+.channel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px;}
+.ch-card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;}
+.ch-card:hover{border-color:#4a5568;transform:translateY(-2px);}
+.ch-card.selected{border-width:2px;}
+.ch-icon{font-size:22px;margin-bottom:8px;}
+.ch-name{font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:8px;}
+.ch-metric{font-size:11px;color:#718096;margin-bottom:2px;}
+.ch-metric span{color:#e2e8f0;font-weight:600;float:right;}
+.ch-roas{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;}
+
+/* Diminishing returns viz */
+.dr-container{position:relative;}
+.dr-insight{background:#1e2535;border:1px solid #2d3748;border-radius:8px;padding:12px 16px;margin-top:12px;font-size:12px;color:#a0aec0;line-height:1.6;}
+.dr-insight strong{color:#f6e05e;}
+
+/* Attribution table */
+.attr-table{width:100%;border-collapse:collapse;}
+.attr-table th{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px;text-align:left;border-bottom:1px solid #2d3748;}
+.attr-table td{font-size:13px;color:#cbd5e0;padding:11px 12px;border-bottom:1px solid #1e2535;}
+.attr-table tr:last-child td{border-bottom:none;}
+.attr-table tr:hover td{background:#202637;}
+.ch-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;}
+.trend-spark{display:flex;gap:2px;align-items:flex-end;height:24px;}
+.spark-bar{width:6px;border-radius:2px 2px 0 0;}
+.status-pill{display:inline-block;padding:2px 10px;border-radius:10px;font-size:10px;font-weight:700;}
+.status-pill.efficient{background:#1a4731;color:#48bb78;}
+.status-pill.diminishing{background:#441a1a;color:#fc8181;}
+.status-pill.optimal{background:#1a3350;color:#63b3ed;}
+
+/* Spend pacing */
+.pacing-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px;}
+.pace-card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:16px;}
+.pace-name{font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:12px;}
+.pace-ring-wrap{display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.pace-ring{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;position:relative;}
+.pace-meta{font-size:11px;color:#718096;text-align:center;}
+.pace-meta span{display:block;color:#e2e8f0;font-weight:600;font-size:12px;}
+.pace-bar-wrap{margin-top:8px;}
+.pace-bar-label{display:flex;justify-content:space-between;font-size:10px;color:#718096;margin-bottom:4px;}
+.pace-bar{height:6px;background:#2d3748;border-radius:3px;}
+.pace-fill{height:100%;border-radius:3px;}
+
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(3,1fr)}.channel-grid,.pacing-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.charts-row,.charts-row-2,.charts-row-3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -70,6 +110,7 @@ canvas{max-height:220px;}
     <a href="index.html" class="nav-link">← Portfolio Home</a>
   </div>
 </header>
+
 <div class="filters">
   <span class="filter-label">Filters</span>
   <select id="periodFilter" onchange="applyFilters()">
@@ -79,13 +120,6 @@ canvas{max-height:220px;}
     <option value="q4" selected>Q4 2025</option>
     <option value="fy">Full Year 2025</option>
   </select>
-  <select id="channelFilter" onchange="applyFilters()">
-    <option value="all">All Channels</option>
-    <option value="paid">Paid Search</option>
-    <option value="organic">Organic</option>
-    <option value="social">Social</option>
-    <option value="email">Email</option>
-  </select>
   <select id="regionFilter" onchange="applyFilters()">
     <option value="all">All Regions</option>
     <option value="na">North America</option>
@@ -94,53 +128,659 @@ canvas{max-height:220px;}
   </select>
   <button class="reset-btn" onclick="resetFilters()">↺ Reset</button>
 </div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('attribution')">📡 Channel Attribution</div>
+  <div class="tab" onclick="switchTab('campaign')">🎯 Campaign Performance</div>
+  <div class="tab" onclick="switchTab('spend')">💸 Ad Spend vs Forecast</div>
+</div>
+
 <main>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 1: Attribution -->
+<div id="tab-attribution" class="tab-content active">
   <div class="kpi-row">
-    <div class="kpi-card pink"><div class="kpi-icon">👥</div><div class="kpi-label">Total Leads</div><div class="kpi-value" id="kpi-leads"></div><div class="kpi-delta" id="kpi-ldelta"></div></div>
-    <div class="kpi-card teal"><div class="kpi-icon">💵</div><div class="kpi-label">Cost per Lead</div><div class="kpi-value" id="kpi-cpl"></div><div class="kpi-delta" id="kpi-cdelta"></div></div>
-    <div class="kpi-card purple"><div class="kpi-icon">🔄</div><div class="kpi-label">MQL → SQL Rate</div><div class="kpi-value" id="kpi-conv"></div><div class="kpi-delta" id="kpi-convdelta"></div></div>
-    <div class="kpi-card yellow"><div class="kpi-icon">📊</div><div class="kpi-label">Campaign ROI</div><div class="kpi-value" id="kpi-roi"></div><div class="kpi-delta" id="kpi-roidelta"></div></div>
+    <div class="kpi-card pink"><div class="kpi-label">Total Leads</div><div class="kpi-value" id="a-leads"></div><div class="kpi-delta" id="a-ldelta"></div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Blended CPL</div><div class="kpi-value" id="a-cpl"></div><div class="kpi-delta" id="a-cpldelta"></div></div>
+    <div class="kpi-card purple"><div class="kpi-label">MQL → SQL Rate</div><div class="kpi-value" id="a-conv"></div><div class="kpi-delta" id="a-convdelta"></div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Best ROAS Channel</div><div class="kpi-value" id="a-topchan"></div><div class="kpi-delta" id="a-topval"></div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Channels at Diminishing Returns</div><div class="kpi-value" id="a-dimret"></div><div class="kpi-delta" id="a-dimretlabel"></div></div>
   </div>
+
+  <!-- Channel selector cards -->
+  <div class="channel-grid" id="channelCards"></div>
+
+  <!-- Diminishing returns curve + channel metrics -->
   <div class="charts-row">
-    <div class="card"><div class="card-header"><div><div class="card-title">Lead Volume by Month</div><div class="card-subtitle">MQLs and SQLs over time</div></div><span class="card-badge">Monthly</span></div><canvas id="leadChart"></canvas></div>
-    <div class="card"><div class="card-header"><div><div class="card-title">Traffic by Channel</div><div class="card-subtitle">Share of total sessions</div></div></div><canvas id="channelChart"></canvas></div>
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Diminishing Returns Curve</div><div class="card-subtitle">Incremental leads per $10K additional spend — by channel</div></div>
+        <span class="card-badge" id="dr-badge">All Channels</span>
+      </div>
+      <canvas id="drChart"></canvas>
+      <div class="dr-insight" id="drInsight"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Revenue Attribution</div><div class="card-subtitle">Share of closed revenue by channel</div></div></div>
+      <canvas id="attrPieChart"></canvas>
+    </div>
   </div>
-  <div class="charts-row-2">
-    <div class="card"><div class="card-header"><div><div class="card-title">Conversion Funnel</div><div class="card-subtitle">Visitor → Customer</div></div></div><div class="funnel" id="funnelViz"></div></div>
-    <div class="card"><div class="card-header"><div><div class="card-title">Campaign Performance</div><div class="card-subtitle">Spend vs conversions by channel</div></div></div><canvas id="campaignChart"></canvas></div>
-  </div>
+
+  <!-- Channel deep-dive table -->
   <div class="card">
-    <div class="card-header"><div><div class="card-title">Channel Attribution Table</div><div class="card-subtitle">Leads, spend, CPL and conversion rate by channel</div></div><span class="card-badge">All Channels</span></div>
-    <table class="channel-table"><thead><tr><th>Channel</th><th>Leads</th><th>MQLs</th><th>SQLs</th><th>Spend</th><th>CPL</th><th>Conv Rate</th></tr></thead><tbody id="channelBody"></tbody></table>
+    <div class="card-header"><div><div class="card-title">Channel Attribution Deep Dive</div><div class="card-subtitle">Key metrics, efficiency, and spend optimization signal per channel</div></div><span class="card-badge">All Channels</span></div>
+    <table class="attr-table">
+      <thead><tr><th>Channel</th><th>Spend</th><th>Leads</th><th>MQLs</th><th>SQLs</th><th>Revenue</th><th>CPL</th><th>ROAS</th><th>Trend</th><th>Efficiency</th></tr></thead>
+      <tbody id="attrTableBody"></tbody>
+    </table>
   </div>
+
+  <!-- CPL vs Volume scatter + MQL rate bar -->
+  <div class="charts-row-2" style="margin-top:18px;">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">CPL vs Lead Volume</div><div class="card-subtitle">Bubble size = revenue generated</div></div></div>
+      <canvas id="bubbleChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">MQL Conversion Rate by Channel</div><div class="card-subtitle">% of leads that become MQLs</div></div></div>
+      <canvas id="mqlChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 2: Campaign -->
+<div id="tab-campaign" class="tab-content">
+  <div class="kpi-row">
+    <div class="kpi-card pink"><div class="kpi-label">Active Campaigns</div><div class="kpi-value" id="c-active"></div><div class="kpi-delta" id="c-adelta"></div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Total Campaign Spend</div><div class="kpi-value" id="c-spend"></div><div class="kpi-delta" id="c-sdelta"></div></div>
+    <div class="kpi-card purple"><div class="kpi-label">Avg Campaign ROAS</div><div class="kpi-value" id="c-roas"></div><div class="kpi-delta" id="c-rdelta"></div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Top Campaign CPA</div><div class="kpi-value" id="c-cpa"></div><div class="kpi-delta" id="c-cpadelta"></div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Campaigns Above Target</div><div class="kpi-value" id="c-above"></div><div class="kpi-delta" id="c-abovedlt"></div></div>
+  </div>
+
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Campaign ROAS vs Spend</div><div class="card-subtitle">Bubble size = leads generated · identify high-efficiency campaigns</div></div></div>
+      <canvas id="campBubbleChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">ROAS by Campaign Type</div><div class="card-subtitle">vs target ROAS benchmark</div></div></div>
+      <canvas id="campRoasChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-header"><div><div class="card-title">Campaign Performance Scorecard</div><div class="card-subtitle">All active campaigns ranked by ROAS · spend, leads, CPA, and status</div></div><span class="card-badge" id="camp-count-badge"></span></div>
+    <table class="attr-table">
+      <thead><tr><th>Campaign</th><th>Channel</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>Leads</th><th>CPA</th><th>ROAS</th><th>vs Target</th><th>Status</th></tr></thead>
+      <tbody id="campTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="charts-row-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Weekly Lead Volume by Campaign Type</div><div class="card-subtitle">Stacked — brand vs non-brand vs retargeting</div></div></div>
+      <canvas id="campWeeklyChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">CTR vs Conversion Rate</div><div class="card-subtitle">Click-through vs lead conversion — identify drop-off</div></div></div>
+      <canvas id="campCtrChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 3: Spend -->
+<div id="tab-spend" class="tab-content">
+  <div class="kpi-row">
+    <div class="kpi-card pink"><div class="kpi-label">Total Budget</div><div class="kpi-value" id="s-budget"></div><div class="kpi-delta" id="s-bdelta"></div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Spent to Date</div><div class="kpi-value" id="s-spent"></div><div class="kpi-delta" id="s-spentdelta"></div></div>
+    <div class="kpi-card purple"><div class="kpi-label">Pacing Status</div><div class="kpi-value" id="s-pace"></div><div class="kpi-delta" id="s-pacedelta"></div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Blended ROAS</div><div class="kpi-value" id="s-roas"></div><div class="kpi-delta" id="s-roadelta"></div></div>
+    <div class="kpi-card blue"><div class="kpi-label">ROAS vs Forecast</div><div class="kpi-value" id="s-roasvar"></div><div class="kpi-delta" id="s-roasvardelta"></div></div>
+  </div>
+
+  <!-- Pacing by channel -->
+  <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:#e2e8f0;">Spend Pacing by Channel</div>
+  <div style="font-size:11px;color:#718096;margin-bottom:16px;">Budget consumed vs expected pacing for period · over/under-pacing signals reallocation opportunity</div>
+  <div class="pacing-grid" id="pacingCards"></div>
+
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Cumulative Spend vs Budget Forecast</div><div class="card-subtitle">Month-by-month actual spend tracked against planned budget</div></div><span class="card-badge">MTD / QTD</span></div>
+      <canvas id="spendForecastChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">ROAS vs Forecast by Channel</div><div class="card-subtitle">Actual return vs forecasted return on ad spend</div></div></div>
+      <canvas id="roasForecastChart"></canvas>
+    </div>
+  </div>
+
+  <div class="charts-row-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Weekly Spend Pacing</div><div class="card-subtitle">Actual spend vs ideal pacing curve week by week</div></div></div>
+      <canvas id="weeklyPaceChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Budget Reallocation Opportunity</div><div class="card-subtitle">Recommended shift based on ROAS efficiency · under-performers → top-performers</div></div></div>
+      <canvas id="reallocChart"></canvas>
+    </div>
+  </div>
+</div>
+
 </main>
+
 <script>
-const DATA={
-  q4:{leads:"8,342",cpl:"$41",conv:"28.4%",roi:"312%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+22.1%",cDelta:"-8.3%",convDelta:"+4.2pp",roiDelta:"+41pp",mqls:[480,520,610,580,640,700,720,680,740,810,880,980],sqls:[130,145,172,160,185,198,210,192,218,236,258,291],channel:[38,24,21,11,6],funnel:[{l:"Visitors",v:148200,pct:100,col:"#b794f4"},{l:"Leads",v:8342,pct:5.6,col:"#9f7aea"},{l:"MQLs",v:2968,pct:2.0,col:"#805ad5"},{l:"SQLs",v:843,pct:0.57,col:"#6b46c1"},{l:"Customers",v:143,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:98,conv:312},{ch:"Email",spend:12,conv:241},{ch:"Social",spend:44,conv:198},{ch:"Organic",spend:8,conv:174},{ch:"Events",spend:31,conv:88}],channels:[{name:"Paid Search",col:"#b794f4",leads:3168,mqls:1102,sqls:320,spend:"$98K",cpl:"$31",conv:"10.1%"},{name:"Organic SEO",col:"#4fd1c5",leads:2002,mqls:720,sqls:202,spend:"$8K",cpl:"$4",conv:"10.1%"},{name:"Social Media",col:"#f093fb",leads:1752,mqls:594,sqls:160,spend:"$44K",cpl:"$25",conv:"9.1%"},{name:"Email",col:"#f6e05e",leads:918,mqls:381,sqls:118,spend:"$12K",cpl:"$13",conv:"12.8%"},{name:"Events",col:"#68d391",leads:502,mqls:171,sqls:43,spend:"$31K",cpl:"$62",conv:"8.6%"}]},
-  q3:{leads:"6,831",cpl:"$44",conv:"24.2%",roi:"271%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+14.8%",cDelta:"-4.1%",convDelta:"+2.1pp",roiDelta:"+28pp",mqls:[390,430,510,480,530,580,600,560,620,680,730,820],sqls:[104,116,138,126,146,160,168,152,174,194,210,237],channel:[35,26,22,11,6],funnel:[{l:"Visitors",v:121400,pct:100,col:"#b794f4"},{l:"Leads",v:6831,pct:5.6,col:"#9f7aea"},{l:"MQLs",v:2286,pct:1.9,col:"#805ad5"},{l:"SQLs",v:553,pct:0.46,col:"#6b46c1"},{l:"Customers",v:127,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:88,conv:271},{ch:"Email",spend:10,conv:218},{ch:"Social",spend:38,conv:176},{ch:"Organic",spend:7,conv:155},{ch:"Events",spend:28,conv:74}],channels:[{name:"Paid Search",col:"#b794f4",leads:2391,mqls:800,sqls:221,spend:"$88K",cpl:"$37",conv:"9.2%"},{name:"Organic SEO",col:"#4fd1c5",leads:1776,mqls:617,sqls:162,spend:"$7K",cpl:"$4",conv:"9.1%"},{name:"Social Media",col:"#f093fb",leads:1503,mqls:489,sqls:122,spend:"$38K",cpl:"$25",conv:"8.1%"},{name:"Email",col:"#f6e05e",leads:751,mqls:295,sqls:88,spend:"$10K",cpl:"$13",conv:"11.7%"},{name:"Events",col:"#68d391",leads:410,mqls:85,sqls:0,spend:"$28K",cpl:"$68",conv:"0%"}]},
-  q2:{leads:"5,951",cpl:"$46",conv:"22.1%",roi:"243%",lUp:true,cUp:false,convUp:false,roiUp:true,lDelta:"+9.3%",cDelta:"-2.2%",convDelta:"-0.8pp",roiDelta:"+18pp",mqls:[320,360,420,400,440,480,500,470,520,571,612,680],sqls:[84,96,112,104,118,128,136,122,142,158,172,196],channel:[33,27,23,11,6],funnel:[{l:"Visitors",v:104200,pct:100,col:"#b794f4"},{l:"Leads",v:5951,pct:5.7,col:"#9f7aea"},{l:"MQLs",v:1906,pct:1.8,col:"#805ad5"},{l:"SQLs",v:421,pct:0.40,col:"#6b46c1"},{l:"Customers",v:112,pct:0.11,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:78,conv:243},{ch:"Email",spend:9,conv:198},{ch:"Social",spend:34,conv:154},{ch:"Organic",spend:6,conv:141},{ch:"Events",spend:0,conv:0}],channels:[{name:"Paid Search",col:"#b794f4",leads:1964,mqls:629,sqls:168,spend:"$78K",cpl:"$40",conv:"8.6%"},{name:"Organic SEO",col:"#4fd1c5",leads:1607,mqls:552,sqls:142,spend:"$6K",cpl:"$4",conv:"8.8%"},{name:"Social Media",col:"#f093fb",leads:1369,mqls:420,sqls:100,spend:"$34K",cpl:"$25",conv:"7.3%"},{name:"Email",col:"#f6e05e",leads:655,mqls:260,sqls:75,spend:"$9K",cpl:"$14",conv:"11.5%"},{name:"Events",col:"#68d391",leads:356,mqls:45,sqls:0,spend:"—",cpl:"—",conv:"0%"}]},
-  q1:{leads:"5,442",cpl:"$47",conv:"21.3%",roi:"225%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+6.1%",cDelta:"-1.1%",convDelta:"+1.2pp",roiDelta:"+12pp",mqls:[290,320,380,360,400,440,460,420,470,520,561,621],sqls:[76,84,101,96,108,118,124,110,130,146,160,181],channel:[31,28,24,11,6],funnel:[{l:"Visitors",v:94800,pct:100,col:"#b794f4"},{l:"Leads",v:5442,pct:5.7,col:"#9f7aea"},{l:"MQLs",v:1660,pct:1.8,col:"#805ad5"},{l:"SQLs",v:354,pct:0.37,col:"#6b46c1"},{l:"Customers",v:98,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:70,conv:225},{ch:"Email",spend:8,conv:181},{ch:"Social",spend:30,conv:138},{ch:"Organic",spend:5,conv:128},{ch:"Events",spend:0,conv:0}],channels:[{name:"Paid Search",col:"#b794f4",leads:1687,mqls:498,sqls:128,spend:"$70K",cpl:"$41",conv:"7.6%"},{name:"Organic SEO",col:"#4fd1c5",leads:1524,mqls:498,sqls:124,spend:"$5K",cpl:"$3",conv:"8.1%"},{name:"Social Media",col:"#f093fb",leads:1306,mqls:382,sqls:88,spend:"$30K",cpl:"$23",conv:"6.7%"},{name:"Email",col:"#f6e05e",leads:598,mqls:232,sqls:66,spend:"$8K",cpl:"$13",conv:"11.0%"},{name:"Events",col:"#68d391",leads:327,mqls:50,sqls:0,spend:"—",cpl:"—",conv:"0%"}]},
-  fy:{leads:"26,566",cpl:"$43",conv:"25.8%",roi:"289%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+16.2%",cDelta:"-5.9%",convDelta:"+2.8pp",roiDelta:"+32pp",mqls:[1480,1630,1920,1820,2010,2200,2280,2122,2352,2581,2783,3101],sqls:[394,441,523,486,557,604,638,576,664,734,800,905],channel:[34,26,22,11,7],funnel:[{l:"Visitors",v:468600,pct:100,col:"#b794f4"},{l:"Leads",v:26566,pct:5.7,col:"#9f7aea"},{l:"MQLs",v:8820,pct:1.9,col:"#805ad5"},{l:"SQLs",v:2171,pct:0.46,col:"#6b46c1"},{l:"Customers",v:480,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:334,conv:289},{ch:"Email",spend:39,conv:238},{ch:"Social",spend:146,conv:166},{ch:"Organic",spend:26,conv:152},{ch:"Events",spend:59,conv:62}],channels:[{name:"Paid Search",col:"#b794f4",leads:9032,mqls:3029,sqls:839,spend:"$334K",cpl:"$37",conv:"9.3%"},{name:"Organic SEO",col:"#4fd1c5",leads:6909,mqls:2387,sqls:630,spend:"$26K",cpl:"$4",conv:"9.1%"},{name:"Social Media",col:"#f093fb",leads:5845,mqls:1885,sqls:470,spend:"$146K",cpl:"$25",conv:"8.0%"},{name:"Email",col:"#f6e05e",leads:2922,mqls:1168,sqls:347,spend:"$39K",cpl:"$13",conv:"11.9%"},{name:"Events",col:"#68d391",leads:1595,mqls:351,sqls:43,spend:"$59K",cpl:"$37",conv:"2.7%"}]}
+// ─── COLORS ───────────────────────────────────────────────────────────
+const COLORS={
+  'Paid Search':'#b794f4','Organic SEO':'#4fd1c5','Paid Social':'#f093fb',
+  'Email':'#f6e05e','Display/Retargeting':'#fc8181'
 };
-const MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const CKEYS=Object.keys(COLORS);
+
+// ─── DATA ──────────────────────────────────────────────────────────────
+const DATA={
+  q4:{
+    leads:'8,342',cpl:'$41',conv:'28.4%',topChan:'Email',topVal:'4.2x ROAS',dimRet:'2',dimRetLabel:'Paid Search · Display',
+    channels:[
+      {name:'Paid Search',icon:'🔍',spend:98,leads:3168,mqls:1102,sqls:320,rev:1.84,cpl:31,roas:18.8,mqlRate:34.8,efficiency:'diminishing',
+       drCurve:[42,38,31,24,17,11,7,4],trendBars:[60,65,72,68,75,80,76,84]},
+      {name:'Organic SEO',icon:'🌿',spend:8,leads:2002,mqls:720,sqls:202,rev:1.12,cpl:4,roas:140,mqlRate:36.0,efficiency:'optimal',
+       drCurve:[88,84,79,74,68,61,53,44],trendBars:[55,58,62,60,65,68,64,70]},
+      {name:'Paid Social',icon:'📱',spend:44,leads:1752,mqls:594,sqls:160,rev:0.88,cpl:25,roas:20.0,mqlRate:33.9,efficiency:'optimal',
+       drCurve:[55,50,44,37,30,23,16,10],trendBars:[40,45,42,48,50,46,52,54]},
+      {name:'Email',icon:'📧',spend:12,leads:918,mqls:381,sqls:118,rev:0.71,cpl:13,roas:59.2,mqlRate:41.5,efficiency:'efficient',
+       drCurve:[70,68,65,62,58,53,47,40],trendBars:[48,50,54,52,56,60,58,64]},
+      {name:'Display/Retargeting',icon:'🖥️',spend:38,leads:502,mqls:171,sqls:43,rev:0.27,cpl:76,roas:7.1,mqlRate:34.1,efficiency:'diminishing',
+       drCurve:[28,22,16,11,7,4,2,1],trendBars:[35,32,30,28,26,24,22,20]},
+    ],
+    camps:[
+      {name:'Brand Search – Core',ch:'Paid Search',spend:28,impr:'1.2M',clicks:'48K',leads:820,cpa:34,roas:24.1,target:18,st:'above'},
+      {name:'Non-Brand Search – Demo',ch:'Paid Search',spend:34,impr:'2.8M',clicks:'62K',leads:1140,cpa:30,roas:21.4,target:18,st:'above'},
+      {name:'Retargeting – Cart',ch:'Display/Retargeting',spend:18,impr:'3.4M',clicks:'29K',leads:248,cpa:73,roas:9.2,target:12,st:'below'},
+      {name:'LinkedIn – Demand Gen',ch:'Paid Social',spend:22,impr:'980K',clicks:'18K',leads:640,cpa:34,roas:22.8,target:20,st:'above'},
+      {name:'Facebook – Awareness',ch:'Paid Social',spend:14,impr:'4.1M',clicks:'31K',leads:612,cpa:23,roas:18.2,target:20,st:'below'},
+      {name:'Nurture – Mid Funnel',ch:'Email',spend:6,impr:'—',clicks:'42K',leads:448,cpa:13,roas:62.4,target:40,st:'above'},
+      {name:'Win-Back – Lapsed',ch:'Email',spend:4,impr:'—',clicks:'18K',leads:220,cpa:18,roas:52.1,target:40,st:'above'},
+      {name:'Display Prospecting',ch:'Display/Retargeting',spend:14,impr:'5.2M',clicks:'21K',leads:182,cpa:77,roas:5.8,target:12,st:'below'},
+      {name:'YouTube Pre-Roll',ch:'Paid Social',spend:8,impr:'2.2M',clicks:'12K',leads:280,cpa:29,roas:14.1,target:20,st:'below'},
+    ],
+    spendBudget:'$200K',spendSpent:'$156K',spendPace:'On Pace',spendRoas:'3.8x',spendRoasVar:'+0.3x',spendRoasVarUp:true,
+    pacingChannels:[
+      {name:'Paid Search',budget:110,spent:98,expected:98,roas:18.8,roasForecast:16.0},
+      {name:'Organic SEO',budget:10,spent:8,expected:8,roas:140,roasForecast:120},
+      {name:'Paid Social',budget:50,spent:44,expected:46,roas:20.0,roasForecast:18.0},
+      {name:'Email',budget:14,spent:12,expected:12,roas:59.2,roasForecast:50.0},
+      {name:'Display/Retargeting',budget:42,spent:38,expected:40,roas:7.1,roasForecast:12.0},
+    ],
+    spendCumActual:[12,26,41,58,72,89,104,118,132,144,149,156],
+    spendCumBudget:[16,33,50,67,83,100,117,133,150,167,183,200],
+    weeklyActual:[28,32,38,36,42,46,44,50,52,48,54,58],
+    weeklyIdeal:[33,33,33,33,33,33,33,33,33,33,33,33],
+    campWeekly:{brand:[80,88,92,86,96,102,98,108],nonbrand:[112,122,130,124,138,146,140,154],retarg:[48,44,40,36,32,28,24,20]},
+    ctrConv:[
+      {ch:'Brand Search',ctr:4.1,conv:1.71},{ch:'Non-Brand',ctr:2.2,conv:1.84},{ch:'LinkedIn',ctr:1.8,conv:3.56},
+      {ch:'Facebook',ctr:0.76,conv:1.98},{ch:'Retargeting',ctr:0.86,conv:0.86},{ch:'YouTube',ctr:0.55,conv:2.33},
+    ],
+    realloc:[
+      {ch:'Paid Search',current:98,recommended:80,change:-18},
+      {ch:'Organic SEO',current:8,recommended:14,change:6},
+      {ch:'Paid Social',current:44,recommended:52,change:8},
+      {ch:'Email',current:12,recommended:20,change:8},
+      {ch:'Display/Retargeting',current:38,recommended:24,change:-14},
+    ]
+  },
+  q3:{
+    leads:'6,831',cpl:'$44',conv:'24.2%',topChan:'Email',topVal:'3.9x ROAS',dimRet:'1',dimRetLabel:'Display',
+    channels:[
+      {name:'Paid Search',icon:'🔍',spend:88,leads:2391,mqls:800,sqls:221,rev:1.42,cpl:37,roas:16.1,mqlRate:33.5,efficiency:'optimal',drCurve:[40,36,30,23,16,10,6,3],trendBars:[52,56,60,58,64,68,64,72]},
+      {name:'Organic SEO',icon:'🌿',spend:7,leads:1776,mqls:617,sqls:162,rev:0.98,cpl:4,roas:140,mqlRate:34.7,efficiency:'optimal',drCurve:[85,81,76,70,63,55,46,36],trendBars:[50,54,58,56,60,64,60,66]},
+      {name:'Paid Social',icon:'📱',spend:38,leads:1503,mqls:489,sqls:122,rev:0.74,cpl:25,roas:19.5,mqlRate:32.5,efficiency:'optimal',drCurve:[52,47,41,34,27,20,13,7],trendBars:[36,40,38,44,46,42,48,50]},
+      {name:'Email',icon:'📧',spend:10,leads:751,mqls:295,sqls:88,rev:0.58,cpl:13,roas:58.0,mqlRate:39.3,efficiency:'efficient',drCurve:[68,66,62,59,54,48,41,33],trendBars:[44,46,50,48,52,56,54,60]},
+      {name:'Display/Retargeting',icon:'🖥️',spend:28,leads:410,mqls:85,sqls:0,rev:0.18,cpl:68,roas:6.4,mqlRate:20.7,efficiency:'diminishing',drCurve:[22,16,10,6,3,1,0,0],trendBars:[30,28,26,24,22,20,18,16]},
+    ],
+    camps:[
+      {name:'Brand Search – Core',ch:'Paid Search',spend:22,impr:'1.0M',clicks:'40K',leads:660,cpa:33,roas:22.8,target:18,st:'above'},
+      {name:'Non-Brand Search – Demo',ch:'Paid Search',spend:28,impr:'2.2M',clicks:'51K',leads:940,cpa:30,roas:19.4,target:18,st:'above'},
+      {name:'Retargeting – Cart',ch:'Display/Retargeting',spend:14,impr:'2.8M',clicks:'22K',leads:198,cpa:71,roas:8.4,target:12,st:'below'},
+      {name:'LinkedIn – Demand Gen',ch:'Paid Social',spend:18,impr:'810K',clicks:'14K',leads:530,cpa:34,roas:20.6,target:20,st:'above'},
+      {name:'Facebook – Awareness',ch:'Paid Social',spend:12,impr:'3.4M',clicks:'26K',leads:522,cpa:23,roas:18.0,target:20,st:'below'},
+      {name:'Nurture – Mid Funnel',ch:'Email',spend:5,impr:'—',clicks:'36K',leads:382,cpa:13,roas:58.8,target:40,st:'above'},
+      {name:'Win-Back – Lapsed',ch:'Email',spend:3,impr:'—',clicks:'14K',leads:180,cpa:17,roas:50.2,target:40,st:'above'},
+      {name:'Display Prospecting',ch:'Display/Retargeting',spend:10,impr:'4.2M',clicks:'17K',leads:140,cpa:71,roas:5.2,target:12,st:'below'},
+    ],
+    spendBudget:'$170K',spendSpent:'$136K',spendPace:'On Pace',spendRoas:'3.5x',spendRoasVar:'+0.1x',spendRoasVarUp:true,
+    pacingChannels:[
+      {name:'Paid Search',budget:96,spent:88,expected:90,roas:16.1,roasForecast:15.0},
+      {name:'Organic SEO',budget:9,spent:7,expected:8,roas:140,roasForecast:120},
+      {name:'Paid Social',budget:42,spent:38,expected:40,roas:19.5,roasForecast:18.0},
+      {name:'Email',budget:12,spent:10,expected:10,roas:58.0,roasForecast:48.0},
+      {name:'Display/Retargeting',budget:32,spent:28,expected:30,roas:6.4,roasForecast:12.0},
+    ],
+    spendCumActual:[10,22,36,50,62,76,90,104,114,124,130,136],
+    spendCumBudget:[14,28,42,57,71,85,99,113,127,142,156,170],
+    weeklyActual:[24,28,32,30,36,40,38,44,46,42,48,52],
+    weeklyIdeal:[28,28,28,28,28,28,28,28,28,28,28,28],
+    campWeekly:{brand:[68,74,80,76,84,90,86,96],nonbrand:[96,106,114,108,122,130,124,138],retarg:[40,36,32,28,24,20,16,12]},
+    ctrConv:[
+      {ch:'Brand Search',ctr:4.0,conv:1.65},{ch:'Non-Brand',ctr:2.1,conv:1.76},{ch:'LinkedIn',ctr:1.7,conv:3.31},
+      {ch:'Facebook',ctr:0.71,conv:1.88},{ch:'Retargeting',ctr:0.79,conv:0.79},{ch:'YouTube',ctr:0.48,conv:2.10},
+    ],
+    realloc:[
+      {ch:'Paid Search',current:88,recommended:76,change:-12},
+      {ch:'Organic SEO',current:7,recommended:12,change:5},
+      {ch:'Paid Social',current:38,recommended:44,change:6},
+      {ch:'Email',current:10,recommended:16,change:6},
+      {ch:'Display/Retargeting',current:28,recommended:18,change:-10},
+    ]
+  },
+  q2:{
+    leads:'5,951',cpl:'$46',conv:'22.1%',topChan:'Email',topVal:'3.6x ROAS',dimRet:'1',dimRetLabel:'Display',
+    channels:[
+      {name:'Paid Search',icon:'🔍',spend:78,leads:1964,mqls:629,sqls:168,rev:1.14,cpl:40,roas:14.6,mqlRate:32.0,efficiency:'optimal',drCurve:[38,34,28,22,15,9,5,2],trendBars:[46,50,54,52,58,62,58,66]},
+      {name:'Organic SEO',icon:'🌿',spend:6,leads:1607,mqls:552,sqls:142,rev:0.88,cpl:4,roas:146.7,mqlRate:34.3,efficiency:'optimal',drCurve:[82,78,72,66,59,51,42,32],trendBars:[46,50,54,52,56,60,56,62]},
+      {name:'Paid Social',icon:'📱',spend:34,leads:1369,mqls:420,sqls:100,rev:0.62,cpl:25,roas:18.2,mqlRate:30.7,efficiency:'optimal',drCurve:[50,44,38,31,24,17,10,5],trendBars:[32,36,34,40,42,38,44,46]},
+      {name:'Email',icon:'📧',spend:9,leads:655,mqls:260,sqls:75,rev:0.48,cpl:14,roas:53.3,mqlRate:39.7,efficiency:'efficient',drCurve:[66,63,59,55,50,44,37,29],trendBars:[40,42,46,44,48,52,50,56]},
+      {name:'Display/Retargeting',icon:'🖥️',spend:20,leads:356,mqls:45,sqls:0,rev:0.14,cpl:56,roas:7.0,mqlRate:12.6,efficiency:'diminishing',drCurve:[20,14,8,4,2,1,0,0],trendBars:[26,24,22,20,18,16,14,12]},
+    ],
+    camps:[
+      {name:'Brand Search – Core',ch:'Paid Search',spend:18,impr:'0.8M',clicks:'34K',leads:540,cpa:33,roas:20.4,target:18,st:'above'},
+      {name:'Non-Brand Search – Demo',ch:'Paid Search',spend:24,impr:'1.8M',clicks:'42K',leads:780,cpa:31,roas:17.4,target:18,st:'below'},
+      {name:'Retargeting – Cart',ch:'Display/Retargeting',spend:10,impr:'2.2M',clicks:'16K',leads:162,cpa:62,roas:7.8,target:12,st:'below'},
+      {name:'LinkedIn – Demand Gen',ch:'Paid Social',spend:16,impr:'660K',clicks:'12K',leads:442,cpa:36,roas:18.1,target:20,st:'below'},
+      {name:'Facebook – Awareness',ch:'Paid Social',spend:10,impr:'2.8M',clicks:'22K',leads:444,cpa:23,roas:16.4,target:20,st:'below'},
+      {name:'Nurture – Mid Funnel',ch:'Email',spend:4,impr:'—',clicks:'30K',leads:328,cpa:12,roas:55.8,target:40,st:'above'},
+      {name:'Win-Back – Lapsed',ch:'Email',spend:3,impr:'—',clicks:'12K',leads:168,cpa:18,roas:48.0,target:40,st:'above'},
+    ],
+    spendBudget:'$148K',spendSpent:'$118K',spendPace:'Slight Under',spendRoas:'3.4x',spendRoasVar:'-0.1x',spendRoasVarUp:false,
+    pacingChannels:[
+      {name:'Paid Search',budget:84,spent:78,expected:82,roas:14.6,roasForecast:15.0},
+      {name:'Organic SEO',budget:8,spent:6,expected:7,roas:146.7,roasForecast:120},
+      {name:'Paid Social',budget:36,spent:34,expected:35,roas:18.2,roasForecast:18.0},
+      {name:'Email',budget:10,spent:9,expected:9,roas:53.3,roasForecast:48.0},
+      {name:'Display/Retargeting',budget:22,spent:20,expected:21,roas:7.0,roasForecast:12.0},
+    ],
+    spendCumActual:[8,18,30,42,52,64,76,88,96,106,112,118],
+    spendCumBudget:[12,24,37,49,62,74,86,99,111,123,136,148],
+    weeklyActual:[20,24,28,26,32,36,34,40,42,38,44,48],
+    weeklyIdeal:[24,24,24,24,24,24,24,24,24,24,24,24],
+    campWeekly:{brand:[54,60,66,62,70,76,72,82],nonbrand:[80,88,96,90,104,112,106,120],retarg:[34,30,26,22,18,14,10,8]},
+    ctrConv:[
+      {ch:'Brand Search',ctr:3.9,conv:1.59},{ch:'Non-Brand',ctr:2.0,conv:1.68},{ch:'LinkedIn',ctr:1.6,conv:3.14},
+      {ch:'Facebook',ctr:0.66,conv:1.79},{ch:'Retargeting',ctr:0.73,conv:0.73},{ch:'YouTube',ctr:0.44,conv:1.98},
+    ],
+    realloc:[
+      {ch:'Paid Search',current:78,recommended:68,change:-10},
+      {ch:'Organic SEO',current:6,recommended:10,change:4},
+      {ch:'Paid Social',current:34,recommended:40,change:6},
+      {ch:'Email',current:9,recommended:14,change:5},
+      {ch:'Display/Retargeting',current:20,recommended:14,change:-6},
+    ]
+  },
+  q1:{
+    leads:'5,442',cpl:'$47',conv:'21.3%',topChan:'Email',topVal:'3.4x ROAS',dimRet:'1',dimRetLabel:'Display',
+    channels:[
+      {name:'Paid Search',icon:'🔍',spend:70,leads:1687,mqls:498,sqls:128,rev:0.98,cpl:41,roas:14.0,mqlRate:29.5,efficiency:'optimal',drCurve:[36,32,26,20,13,8,4,2],trendBars:[42,46,50,48,54,58,54,62]},
+      {name:'Organic SEO',icon:'🌿',spend:5,leads:1524,mqls:498,sqls:124,rev:0.82,cpl:3,roas:164,mqlRate:32.7,efficiency:'optimal',drCurve:[80,76,70,63,56,48,39,29],trendBars:[44,48,52,50,54,58,54,60]},
+      {name:'Paid Social',icon:'📱',spend:30,leads:1306,mqls:382,sqls:88,rev:0.56,cpl:23,roas:18.7,mqlRate:29.2,efficiency:'optimal',drCurve:[48,42,36,29,22,15,8,3],trendBars:[28,32,30,36,38,34,40,42]},
+      {name:'Email',icon:'📧',spend:8,leads:598,mqls:232,sqls:66,rev:0.42,cpl:13,roas:52.5,mqlRate:38.8,efficiency:'efficient',drCurve:[64,61,57,52,47,40,32,24],trendBars:[36,38,42,40,44,48,46,52]},
+      {name:'Display/Retargeting',icon:'🖥️',spend:16,leads:327,mqls:50,sqls:0,rev:0.10,cpl:49,roas:6.3,mqlRate:15.3,efficiency:'diminishing',drCurve:[18,12,6,3,1,0,0,0],trendBars:[22,20,18,16,14,12,10,8]},
+    ],
+    camps:[
+      {name:'Brand Search – Core',ch:'Paid Search',spend:16,impr:'0.7M',clicks:'30K',leads:468,cpa:34,roas:19.2,target:18,st:'above'},
+      {name:'Non-Brand Search – Demo',ch:'Paid Search',spend:20,impr:'1.5M',clicks:'36K',leads:672,cpa:30,roas:16.8,target:18,st:'below'},
+      {name:'Retargeting – Cart',ch:'Display/Retargeting',spend:8,impr:'1.8M',clicks:'14K',leads:142,cpa:56,roas:6.8,target:12,st:'below'},
+      {name:'LinkedIn – Demand Gen',ch:'Paid Social',spend:14,impr:'560K',clicks:'10K',leads:382,cpa:37,roas:17.4,target:20,st:'below'},
+      {name:'Facebook – Awareness',ch:'Paid Social',spend:8,impr:'2.2M',clicks:'18K',leads:380,cpa:21,roas:16.0,target:20,st:'below'},
+      {name:'Nurture – Mid Funnel',ch:'Email',spend:4,impr:'—',clicks:'26K',leads:298,cpa:13,roas:52.0,target:40,st:'above'},
+      {name:'Win-Back – Lapsed',ch:'Email',spend:3,impr:'—',clicks:'10K',leads:148,cpa:20,roas:46.0,target:40,st:'above'},
+    ],
+    spendBudget:'$130K',spendSpent:'$102K',spendPace:'On Pace',spendRoas:'3.2x',spendRoasVar:'-0.2x',spendRoasVarUp:false,
+    pacingChannels:[
+      {name:'Paid Search',budget:74,spent:70,expected:72,roas:14.0,roasForecast:15.0},
+      {name:'Organic SEO',budget:7,spent:5,expected:6,roas:164,roasForecast:120},
+      {name:'Paid Social',budget:32,spent:30,expected:31,roas:18.7,roasForecast:18.0},
+      {name:'Email',budget:9,spent:8,expected:8,roas:52.5,roasForecast:48.0},
+      {name:'Display/Retargeting',budget:18,spent:16,expected:17,roas:6.3,roasForecast:12.0},
+    ],
+    spendCumActual:[7,15,25,36,44,55,66,76,84,92,97,102],
+    spendCumBudget:[10,21,32,43,54,65,76,87,97,108,119,130],
+    weeklyActual:[18,22,26,24,28,32,30,36,38,34,40,44],
+    weeklyIdeal:[21,21,21,21,21,21,21,21,21,21,21,21],
+    campWeekly:{brand:[46,52,58,54,62,68,64,74],nonbrand:[68,76,84,78,90,98,92,106],retarg:[28,24,20,16,12,8,4,2]},
+    ctrConv:[
+      {ch:'Brand Search',ctr:3.7,conv:1.51},{ch:'Non-Brand',ctr:1.9,conv:1.60},{ch:'LinkedIn',ctr:1.5,conv:2.98},
+      {ch:'Facebook',ctr:0.61,conv:1.70},{ch:'Retargeting',ctr:0.68,conv:0.68},{ch:'YouTube',ctr:0.40,conv:1.86},
+    ],
+    realloc:[
+      {ch:'Paid Search',current:70,recommended:62,change:-8},
+      {ch:'Organic SEO',current:5,recommended:9,change:4},
+      {ch:'Paid Social',current:30,recommended:36,change:6},
+      {ch:'Email',current:8,recommended:12,change:4},
+      {ch:'Display/Retargeting',current:16,recommended:10,change:-6},
+    ]
+  },
+  fy:{
+    leads:'26,566',cpl:'$43',conv:'25.8%',topChan:'Email',topVal:'4.0x ROAS',dimRet:'2',dimRetLabel:'Paid Search · Display',
+    channels:[
+      {name:'Paid Search',icon:'🔍',spend:334,leads:9032,mqls:3029,sqls:839,rev:5.38,cpl:37,roas:16.1,mqlRate:33.5,efficiency:'diminishing',drCurve:[40,36,30,23,16,10,6,3],trendBars:[52,58,64,60,68,74,70,80]},
+      {name:'Organic SEO',icon:'🌿',spend:26,leads:6909,mqls:2387,sqls:630,rev:3.80,cpl:4,roas:146.2,mqlRate:34.5,efficiency:'optimal',drCurve:[84,80,75,69,62,54,45,35],trendBars:[50,56,60,58,62,66,62,68]},
+      {name:'Paid Social',icon:'📱',spend:146,leads:5845,mqls:1885,sqls:470,rev:2.80,cpl:25,roas:19.2,mqlRate:32.2,efficiency:'optimal',drCurve:[52,47,41,34,27,20,13,7],trendBars:[34,40,38,44,46,42,48,50]},
+      {name:'Email',icon:'📧',spend:39,leads:2922,mqls:1168,sqls:347,rev:2.19,cpl:13,roas:56.2,mqlRate:40.0,efficiency:'efficient',drCurve:[68,65,61,57,52,46,39,31],trendBars:[44,48,52,50,56,60,58,64]},
+      {name:'Display/Retargeting',icon:'🖥️',spend:101,leads:1595,mqls:351,sqls:43,rev:0.69,cpl:63,roas:6.8,mqlRate:22.0,efficiency:'diminishing',drCurve:[24,18,12,7,4,2,1,0],trendBars:[30,28,26,24,22,20,18,16]},
+    ],
+    camps:[
+      {name:'Brand Search – Core',ch:'Paid Search',spend:88,impr:'4.2M',clicks:'168K',leads:2880,cpa:31,roas:22.0,target:18,st:'above'},
+      {name:'Non-Brand Search – Demo',ch:'Paid Search',spend:108,impr:'9.2M',clicks:'210K',leads:3920,cpa:28,roas:19.1,target:18,st:'above'},
+      {name:'Retargeting – Cart',ch:'Display/Retargeting',spend:52,impr:'11.8M',clicks:'92K',leads:810,cpa:64,roas:7.8,target:12,st:'below'},
+      {name:'LinkedIn – Demand Gen',ch:'Paid Social',spend:72,impr:'3.4M',clicks:'58K',leads:2080,cpa:35,roas:20.6,target:20,st:'above'},
+      {name:'Facebook – Awareness',ch:'Paid Social',spend:46,impr:'14.2M',clicks:'110K',leads:2008,cpa:23,roas:17.5,target:20,st:'below'},
+      {name:'Nurture – Mid Funnel',ch:'Email',spend:20,impr:'—',clicks:'152K',leads:1480,cpa:14,roas:58.0,target:40,st:'above'},
+      {name:'Win-Back – Lapsed',ch:'Email',spend:14,impr:'—',clicks:'64K',leads:728,cpa:19,roas:50.0,target:40,st:'above'},
+      {name:'Display Prospecting',ch:'Display/Retargeting',spend:38,impr:'18.2M',clicks:'72K',leads:620,cpa:61,roas:5.5,target:12,st:'below'},
+    ],
+    spendBudget:'$648K',spendSpent:'$546K',spendPace:'On Pace',spendRoas:'3.6x',spendRoasVar:'+0.1x',spendRoasVarUp:true,
+    pacingChannels:[
+      {name:'Paid Search',budget:364,spent:334,expected:340,roas:16.1,roasForecast:15.0},
+      {name:'Organic SEO',budget:34,spent:26,expected:30,roas:146.2,roasForecast:120},
+      {name:'Paid Social',budget:160,spent:146,expected:152,roas:19.2,roasForecast:18.0},
+      {name:'Email',budget:45,spent:39,expected:41,roas:56.2,roasForecast:48.0},
+      {name:'Display/Retargeting',budget:112,spent:101,expected:107,roas:6.8,roasForecast:12.0},
+    ],
+    spendCumActual:[38,82,130,182,228,282,336,386,428,472,502,546],
+    spendCumBudget:[54,108,162,216,270,324,378,432,486,540,594,648],
+    weeklyActual:[88,102,118,112,128,142,136,152,158,148,164,178],
+    weeklyIdeal:[108,108,108,108,108,108,108,108,108,108,108,108],
+    campWeekly:{brand:[248,272,294,274,308,326,312,346],nonbrand:[352,386,414,392,432,458,440,480],retarg:[148,132,116,100,84,68,52,36]},
+    ctrConv:[
+      {ch:'Brand Search',ctr:4.0,conv:1.63},{ch:'Non-Brand',ctr:2.1,conv:1.77},{ch:'LinkedIn',ctr:1.7,conv:3.38},
+      {ch:'Facebook',ctr:0.69,conv:1.89},{ch:'Retargeting',ctr:0.78,conv:0.78},{ch:'YouTube',ctr:0.48,conv:2.12},
+    ],
+    realloc:[
+      {ch:'Paid Search',current:334,recommended:290,change:-44},
+      {ch:'Organic SEO',current:26,recommended:46,change:20},
+      {ch:'Paid Social',current:146,recommended:172,change:26},
+      {ch:'Email',current:39,recommended:65,change:26},
+      {ch:'Display/Retargeting',current:101,recommended:63,change:-38},
+    ]
+  }
+};
+
+const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WK=['W1','W2','W3','W4','W5','W6','W7','W8'];
+const SPEND_LABELS=['$10K','$20K','$40K','$60K','$80K','$100K','$130K','$160K'];
 let charts={};
-function kill(){Object.values(charts).forEach(c=>c.destroy());charts={};}
-function render(p){
-  kill();const d=DATA[p];
-  const set=(id,v)=>document.getElementById(id).textContent=v;
-  const cls=(id,v,up)=>{const el=document.getElementById(id);el.textContent=v+" vs prev period";el.className="kpi-delta "+(up?"up":"down");};
-  set("kpi-leads",d.leads);set("kpi-cpl",d.cpl);set("kpi-conv",d.conv);set("kpi-roi",d.roi);
-  cls("kpi-ldelta",d.lDelta,d.lUp);cls("kpi-cdelta",d.cDelta,d.cUp);cls("kpi-convdelta",d.convDelta,d.convUp);cls("kpi-roidelta",d.roiDelta,d.roiUp);
-  charts.lead=new Chart(document.getElementById("leadChart"),{type:"bar",data:{labels:MO,datasets:[{label:"MQLs",data:d.mqls,backgroundColor:"rgba(183,148,244,0.7)",borderRadius:4},{label:"SQLs",data:d.sqls,backgroundColor:"rgba(79,209,197,0.7)",borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:"#a0aec0"}}},scales:{x:{ticks:{color:"#718096"},grid:{color:"#2d3748"}},y:{ticks:{color:"#718096"},grid:{color:"#2d3748"}}}}});
-  charts.ch=new Chart(document.getElementById("channelChart"),{type:"doughnut",data:{labels:["Paid Search","Organic","Social","Email","Events"],datasets:[{data:d.channel,backgroundColor:["#b794f4","#4fd1c5","#f093fb","#f6e05e","#68d391"],borderWidth:0}]},options:{responsive:true,cutout:"68%",plugins:{legend:{position:"bottom",labels:{color:"#a0aec0",padding:14}}}}});
-  const maxV=d.funnel[0].v;
-  document.getElementById("funnelViz").innerHTML=d.funnel.map(f=>`<div class="funnel-row"><div class="funnel-label">${f.l}</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${(f.v/maxV*100).toFixed(1)}%;background:${f.col}">${f.v.toLocaleString()}</div></div><div class="funnel-val">${f.pct}%</div></div>`).join("");
-  charts.camp=new Chart(document.getElementById("campaignChart"),{type:"bar",data:{labels:d.campaigns.map(c=>c.ch),datasets:[{label:"Spend ($K)",data:d.campaigns.map(c=>c.spend),backgroundColor:"rgba(183,148,244,0.7)",borderRadius:4},{label:"Conversions",data:d.campaigns.map(c=>c.conv),backgroundColor:"rgba(79,209,197,0.7)",borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:"#a0aec0"}}},scales:{x:{ticks:{color:"#718096"},grid:{display:false}},y:{ticks:{color:"#718096"},grid:{color:"#2d3748"}}}}});
-  document.getElementById("channelBody").innerHTML=d.channels.map(c=>`<tr><td><span class="dot" style="background:${c.col}"></span>${c.name}</td><td>${c.leads.toLocaleString()}</td><td>${c.mqls.toLocaleString()}</td><td>${c.sqls.toLocaleString()}</td><td>${c.spend}</td><td>${c.cpl}</td><td>${c.conv}</td></tr>`).join("");
+let currentPeriod='q4';
+
+function kill(){Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});charts={};}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  renderTab(tab,currentPeriod);
 }
-function applyFilters(){render(document.getElementById("periodFilter").value);}
-function resetFilters(){document.getElementById("periodFilter").value="q4";document.getElementById("channelFilter").value="all";document.getElementById("regionFilter").value="all";render("q4");}
-render("q4");
+
+function applyFilters(){
+  currentPeriod=document.getElementById('periodFilter').value;
+  const activeTab=document.querySelector('.tab.active').textContent.includes('Attribution')?'attribution':
+    document.querySelector('.tab.active').textContent.includes('Campaign')?'campaign':'spend';
+  renderTab(activeTab,currentPeriod);
+}
+
+function resetFilters(){
+  document.getElementById('periodFilter').value='q4';
+  document.getElementById('regionFilter').value='all';
+  currentPeriod='q4';
+  applyFilters();
+}
+
+function renderTab(tab,p){
+  kill();
+  const d=DATA[p];
+  if(tab==='attribution') renderAttribution(d);
+  else if(tab==='campaign') renderCampaign(d);
+  else renderSpend(d);
+}
+
+// ─── ATTRIBUTION ─────────────────────────────────────────────────────
+function renderAttribution(d){
+  // KPIs
+  setText('a-leads',d.leads);setText('a-cpl',d.cpl);setText('a-conv',d.conv);
+  setText('a-topchan',d.topChan);setText('a-topval',d.topVal);
+  setText('a-dimret',d.dimRet);setText('a-dimretlabel',d.dimRetLabel);
+  setDelta('a-ldelta','+22.1%',true);setDelta('a-cpldelta','-8.3%',false);
+  setDelta('a-convdelta','+4.2pp',true);setDelta('a-topval','vs blended avg',true);
+  setDelta('a-dimretlabel',d.dimRetLabel,false);
+
+  // Channel selector cards
+  const cg=document.getElementById('channelCards');
+  cg.innerHTML=d.channels.map((ch,i)=>`
+    <div class="ch-card" id="chcard-${i}" onclick="highlightChannel(${i},'${currentPeriod}')" style="border-color:${COLORS[ch.name]}44">
+      <div class="ch-icon">${ch.icon}</div>
+      <div class="ch-name" style="color:${COLORS[ch.name]}">${ch.name}</div>
+      <div class="ch-metric">Spend <span>$${ch.spend}K</span></div>
+      <div class="ch-metric">Leads <span>${ch.leads.toLocaleString()}</span></div>
+      <div class="ch-metric">CPL <span>$${ch.cpl}</span></div>
+      <div class="ch-metric">ROAS <span>${ch.roas}x</span></div>
+      <div><span class="ch-roas" style="background:${ch.efficiency==='efficient'?'#1a4731':ch.efficiency==='optimal'?'#1a3350':'#441a1a'};color:${ch.efficiency==='efficient'?'#48bb78':ch.efficiency==='optimal'?'#63b3ed':'#fc8181'}">${ch.efficiency==='efficient'?'✓ Efficient':ch.efficiency==='optimal'?'⟳ Optimal':'⚠ Diminishing'}</span></div>
+    </div>`).join('');
+
+  // DR chart — all channels
+  renderDRChart(d,-1);
+
+  // Attribution pie
+  charts.pie=new Chart(document.getElementById('attrPieChart'),{
+    type:'doughnut',
+    data:{labels:d.channels.map(c=>c.name),datasets:[{data:d.channels.map(c=>c.rev),backgroundColor:d.channels.map(c=>COLORS[c.name]),borderWidth:0}]},
+    options:{responsive:true,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#a0aec0',padding:12,font:{size:11}}}}}
+  });
+
+  // Attribution table
+  document.getElementById('attrTableBody').innerHTML=d.channels.map(ch=>{
+    const bars=ch.trendBars.map(v=>`<div class="spark-bar" style="height:${v}%;background:${COLORS[ch.name]};opacity:.8"></div>`).join('');
+    return`<tr>
+      <td><span class="ch-dot" style="background:${COLORS[ch.name]}"></span>${ch.name}</td>
+      <td>$${ch.spend}K</td><td>${ch.leads.toLocaleString()}</td><td>${ch.mqls.toLocaleString()}</td><td>${ch.sqls.toLocaleString()}</td>
+      <td>$${ch.rev}M</td><td>$${ch.cpl}</td><td style="font-weight:700;color:${ch.roas>30?'#48bb78':ch.roas>15?'#63b3ed':'#fc8181'}">${ch.roas}x</td>
+      <td><div class="trend-spark">${bars}</div></td>
+      <td><span class="status-pill ${ch.efficiency}">${ch.efficiency==='efficient'?'✓ Efficient':ch.efficiency==='optimal'?'Optimal':'⚠ Diminishing'}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Bubble: CPL vs Volume
+  charts.bubble=new Chart(document.getElementById('bubbleChart'),{
+    type:'bubble',
+    data:{datasets:d.channels.map(ch=>({label:ch.name,data:[{x:ch.cpl,y:ch.leads,r:Math.sqrt(ch.rev)*12}],backgroundColor:COLORS[ch.name]+'cc'}))},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{title:{display:true,text:'Cost Per Lead ($)',color:'#718096'},ticks:{color:'#718096',callback:v=>'$'+v},grid:{color:'#2d3748'}},
+        y:{title:{display:true,text:'Lead Volume',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // MQL rate bar
+  charts.mql=new Chart(document.getElementById('mqlChart'),{
+    type:'bar',
+    data:{labels:d.channels.map(c=>c.name),datasets:[{label:'MQL Rate %',data:d.channels.map(c=>c.mqlRate),backgroundColor:d.channels.map(c=>COLORS[c.name]),borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{ticks:{color:'#718096',callback:v=>v+'%'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+function renderDRChart(d,selIdx){
+  if(charts.dr) charts.dr.destroy();
+  const datasets=d.channels.map((ch,i)=>({
+    label:ch.name,data:ch.drCurve,borderColor:COLORS[ch.name],
+    backgroundColor:COLORS[ch.name]+'22',tension:0.4,fill:false,
+    borderWidth:selIdx===-1||selIdx===i?2.5:1,
+    borderDash:selIdx!==-1&&selIdx!==i?[4,4]:[],
+    pointRadius:3,opacity:selIdx===-1||selIdx===i?1:0.3
+  }));
+  charts.dr=new Chart(document.getElementById('drChart'),{
+    type:'line',
+    data:{labels:SPEND_LABELS,datasets},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}},
+        annotation:{annotations:{line1:{type:'line',xMin:4,xMax:4,borderColor:'#f6e05e',borderWidth:1,borderDash:[4,4],label:{content:'Typical Diminishing Returns Zone',enabled:true,color:'#f6e05e',font:{size:10}}}}}},
+      scales:{x:{title:{display:true,text:'Monthly Spend',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}},
+        y:{title:{display:true,text:'Incremental Leads per $10K',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+function highlightChannel(idx,p){
+  const d=DATA[p];
+  document.querySelectorAll('.ch-card').forEach((c,i)=>c.style.opacity=i===idx?'1':'0.45');
+  document.getElementById('dr-badge').textContent=d.channels[idx].name;
+  const ch=d.channels[idx];
+  document.getElementById('drInsight').innerHTML=`<strong>💡 ${ch.name} Insight:</strong> At current spend of <strong>$${ch.spend}K/mo</strong>, incremental lead yield is <strong>${ch.drCurve[Math.min(Math.round(ch.spend/20),7)]}</strong> leads per additional $10K. ${ch.efficiency==='diminishing'?`This channel shows <strong style="color:#fc8181">clear diminishing returns</strong> — reallocating ~$${Math.round(ch.spend*0.2)}K to Email or Organic could improve blended ROAS by an estimated 8–12%.`:ch.efficiency==='efficient'?`<strong style="color:#48bb78">High-efficiency channel</strong> — ROAS of ${ch.roas}x significantly exceeds blended average. Consider increasing budget by $${Math.round(ch.spend*0.4)}K to capture additional headroom.`:`<strong style="color:#63b3ed">Operating near optimal range</strong> — incremental returns are healthy. Monitor closely as spend scales past $${ch.spend+20}K threshold.`}`;
+  renderDRChart(d,idx);
+}
+
+// ─── CAMPAIGN ────────────────────────────────────────────────────────
+function renderCampaign(d){
+  const above=d.camps.filter(c=>c.st==='above').length;
+  setText('c-active',d.camps.length);setText('c-spend','$'+d.camps.reduce((a,c)=>a+c.spend,0)+'K');
+  setText('c-roas',(d.camps.reduce((a,c)=>a+c.roas,0)/d.camps.length).toFixed(1)+'x');
+  setText('c-cpa','$'+Math.min(...d.camps.map(c=>c.cpa)));
+  setText('c-above',above+'/'+d.camps.length);
+  setDelta('c-adelta','Active this period',true);setDelta('c-sdelta','+14.2% vs prev',true);
+  setDelta('c-rdelta','+0.8x vs prev period',true);setDelta('c-cpadelta','Lowest CPA campaign',true);
+  setDelta('c-abovedlt',`${Math.round(above/d.camps.length*100)}% hit ROAS target`,above/d.camps.length>=0.5);
+  document.getElementById('camp-count-badge').textContent=d.camps.length+' Campaigns';
+
+  // Campaign bubble: spend vs ROAS
+  charts.cb=new Chart(document.getElementById('campBubbleChart'),{
+    type:'bubble',
+    data:{datasets:d.camps.map(c=>({label:c.name,data:[{x:c.spend,y:c.roas,r:Math.sqrt(c.leads)*0.6}],backgroundColor:(COLORS[c.ch]||'#a0aec0')+'bb'}))},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: $${ctx.raw.x}K spend · ${ctx.raw.y}x ROAS`}}},
+      scales:{x:{title:{display:true,text:'Spend ($K)',color:'#718096'},ticks:{color:'#718096',callback:v=>'$'+v+'K'},grid:{color:'#2d3748'}},
+        y:{title:{display:true,text:'ROAS',color:'#718096'},ticks:{color:'#718096',callback:v=>v+'x'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ROAS vs target bar
+  charts.cr=new Chart(document.getElementById('campRoasChart'),{
+    type:'bar',
+    data:{labels:d.camps.map(c=>c.name.split('–')[0].trim()),
+      datasets:[{label:'Actual ROAS',data:d.camps.map(c=>c.roas),backgroundColor:d.camps.map(c=>c.st==='above'?'#48bb7888':'#fc818188'),borderRadius:4},{label:'Target ROAS',data:d.camps.map(c=>c.target),backgroundColor:'transparent',borderColor:'#f6e05e',borderWidth:2,type:'line',pointRadius:4}]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096',maxRotation:30},grid:{display:false}},y:{ticks:{color:'#718096',callback:v=>v+'x'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Table
+  document.getElementById('campTableBody').innerHTML=d.camps.sort((a,b)=>b.roas-a.roas).map(c=>`<tr>
+    <td style="font-weight:600;color:#e2e8f0">${c.name}</td>
+    <td><span class="ch-dot" style="background:${COLORS[c.ch]||'#a0aec0'}"></span>${c.ch}</td>
+    <td>$${c.spend}K</td><td>${c.impr}</td><td>${typeof c.clicks==='number'?c.clicks.toLocaleString():c.clicks}</td>
+    <td>${c.leads.toLocaleString()}</td><td>$${c.cpa}</td>
+    <td style="font-weight:700;color:${c.roas>=c.target*1.1?'#48bb78':c.roas>=c.target?'#63b3ed':'#fc8181'}">${c.roas}x</td>
+    <td style="color:${c.st==='above'?'#48bb78':'#fc8181'}">${c.st==='above'?'▲ +'+(c.roas-c.target).toFixed(1)+'x':'▼ '+(c.roas-c.target).toFixed(1)+'x'}</td>
+    <td><span class="status-pill ${c.st==='above'?'efficient':'diminishing'}">${c.st==='above'?'Above Target':'Below Target'}</span></td>
+  </tr>`).join('');
+
+  // Weekly leads stacked
+  charts.cw=new Chart(document.getElementById('campWeeklyChart'),{
+    type:'bar',
+    data:{labels:WK,datasets:[
+      {label:'Brand',data:d.campWeekly.brand,backgroundColor:'rgba(183,148,244,0.75)',borderRadius:2},
+      {label:'Non-Brand',data:d.campWeekly.nonbrand,backgroundColor:'rgba(79,209,197,0.75)',borderRadius:2},
+      {label:'Retargeting',data:d.campWeekly.retarg,backgroundColor:'rgba(252,129,129,0.75)',borderRadius:2}
+    ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0'}}},scales:{x:{stacked:true,ticks:{color:'#718096'},grid:{display:false}},y:{stacked:true,ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // CTR vs Conv scatter
+  charts.ctr=new Chart(document.getElementById('campCtrChart'),{
+    type:'scatter',
+    data:{datasets:d.ctrConv.map((c,i)=>({label:c.ch,data:[{x:c.ctr,y:c.conv}],backgroundColor:Object.values(COLORS)[i%5]+'cc',pointRadius:8,pointHoverRadius:10}))},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{title:{display:true,text:'Click-Through Rate (%)',color:'#718096'},ticks:{color:'#718096',callback:v=>v+'%'},grid:{color:'#2d3748'}},
+        y:{title:{display:true,text:'Lead Conversion Rate (%)',color:'#718096'},ticks:{color:'#718096',callback:v=>v+'%'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+// ─── SPEND ───────────────────────────────────────────────────────────
+function renderSpend(d){
+  setText('s-budget',d.spendBudget);setText('s-spent',d.spendSpent);
+  setText('s-pace',d.spendPace);setText('s-roas',d.spendRoas);setText('s-roasvar',d.spendRoasVar);
+  setDelta('s-bdelta','Total planned period budget',true);
+  setDelta('s-spentdelta',Math.round(parseInt(d.spendSpent.replace(/\D/g,''))/parseInt(d.spendBudget.replace(/\D/g,''))*100)+'% of budget consumed',true);
+  setDelta('s-pacedelta',d.spendPace==='On Pace'?'Within ±5% of ideal curve':d.spendPace==='Slight Under'?'5–10% behind pace':'Over-pacing — watch burn rate',d.spendPace!=='Slight Over');
+  setDelta('s-roadelta','Blended across all channels',d.spendRoasVarUp);
+  setDelta('s-roasvardelta',d.spendRoasVarUp?'Exceeding forecast':'Below forecast',d.spendRoasVarUp);
+
+  // Pacing cards with donut rings
+  const pc=document.getElementById('pacingCards');
+  pc.innerHTML=d.pacingChannels.map(ch=>{
+    const pct=Math.round(ch.spent/ch.budget*100);
+    const expectedPct=Math.round(ch.expected/ch.budget*100);
+    const over=pct>expectedPct+5;const under=pct<expectedPct-5;
+    const col=over?'#fc8181':under?'#f6e05e':'#48bb78';
+    const deg=Math.min(pct/100*360,360);
+    return`<div class="pace-card">
+      <div class="pace-name">${ch.name}</div>
+      <div class="pace-ring-wrap">
+        <div class="pace-ring" style="background:conic-gradient(${col} ${deg}deg,#2d3748 ${deg}deg);color:${col}">${pct}%</div>
+      </div>
+      <div class="pace-meta"><span>$${ch.spent}K of $${ch.budget}K</span>Expected: $${ch.expected}K</div>
+      <div class="pace-bar-wrap">
+        <div class="pace-bar-label"><span>Pacing</span><span style="color:${col}">${over?'Over-pacing':under?'Under-pacing':'On track'}</span></div>
+        <div class="pace-bar"><div class="pace-fill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Cumulative spend vs forecast
+  charts.sf=new Chart(document.getElementById('spendForecastChart'),{
+    type:'line',
+    data:{labels:MO,datasets:[
+      {label:'Actual Spend',data:d.spendCumActual,borderColor:'#b794f4',backgroundColor:'rgba(183,148,244,0.12)',tension:0.4,fill:true,pointRadius:3},
+      {label:'Budget Forecast',data:d.spendCumBudget,borderColor:'#f6e05e',borderDash:[5,4],tension:0.4,fill:false,pointRadius:0}
+    ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0'}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'}},y:{ticks:{color:'#718096',callback:v=>'$'+v+'K'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ROAS vs forecast bar
+  charts.rf=new Chart(document.getElementById('roasForecastChart'),{
+    type:'bar',
+    data:{labels:d.pacingChannels.map(c=>c.name),
+      datasets:[
+        {label:'Actual ROAS',data:d.pacingChannels.map(c=>c.roas>99?99:c.roas),backgroundColor:d.pacingChannels.map(c=>c.roas>=c.roasForecast?'rgba(72,187,120,0.7)':'rgba(252,129,129,0.7)'),borderRadius:4},
+        {label:'Forecasted ROAS',data:d.pacingChannels.map(c=>c.roasForecast),backgroundColor:'transparent',borderColor:'#f6e05e',borderWidth:2,type:'line',pointRadius:5}
+      ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{ticks:{color:'#718096',callback:v=>v+'x'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Weekly pace
+  charts.wp=new Chart(document.getElementById('weeklyPaceChart'),{
+    type:'line',
+    data:{labels:WK.concat(WK.slice(0,4)),datasets:[
+      {label:'Actual Spend',data:d.weeklyActual,borderColor:'#b794f4',backgroundColor:'rgba(183,148,244,0.1)',tension:0.4,fill:true,pointRadius:3},
+      {label:'Ideal Pace',data:d.weeklyIdeal,borderColor:'#f6e05e',borderDash:[5,4],tension:0,fill:false,pointRadius:0}
+    ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0'}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'}},y:{ticks:{color:'#718096',callback:v=>'$'+v+'K'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Reallocation waterfall
+  charts.ra=new Chart(document.getElementById('reallocChart'),{
+    type:'bar',
+    data:{labels:d.realloc.map(r=>r.ch),
+      datasets:[
+        {label:'Current ($K)',data:d.realloc.map(r=>r.current),backgroundColor:'rgba(160,174,192,0.4)',borderRadius:4},
+        {label:'Recommended ($K)',data:d.realloc.map(r=>r.recommended),backgroundColor:d.realloc.map(r=>r.change>0?'rgba(72,187,120,0.7)':'rgba(252,129,129,0.7)'),borderRadius:4}
+      ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{ticks:{color:'#718096',callback:v=>'$'+v+'K'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────
+function setText(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function setDelta(id,val,up){const el=document.getElementById(id);if(el){el.textContent=val;el.className='kpi-delta '+(up?'up':'down');}}
+
+// Init
+renderTab('attribution','q4');
 </script>
 </body>
 </html>
