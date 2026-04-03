@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing & Growth Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;}
+header{background:linear-gradient(135deg,#1a1f2e,#16213e);border-bottom:1px solid #2d3748;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#f093fb,#f5576c);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo h1{font-size:18px;font-weight:700;color:#f7fafc;}
+.logo span{font-size:12px;color:#718096;display:block;}
+.badge{background:#2d1f4a;color:#b794f4;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+.nav-link{color:#a0aec0;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #2d3748;border-radius:6px;}
+.nav-link:hover{color:#b794f4;border-color:#b794f4;}
+.filters{background:#1a1f2e;border-bottom:1px solid #2d3748;padding:12px 32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.filter-label{font-size:12px;color:#718096;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+select{background:#2d3748;border:1px solid #4a5568;color:#e2e8f0;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;outline:none;}
+select:hover{border-color:#b794f4;}
+.reset-btn{background:transparent;border:1px solid #4a5568;color:#a0aec0;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;}
+.reset-btn:hover{border-color:#b794f4;color:#b794f4;}
+main{padding:28px 32px;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
+.kpi-card{background:linear-gradient(135deg,#1a1f2e,#1e2535);border:1px solid #2d3748;border-radius:12px;padding:20px 24px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-card.pink::before{background:linear-gradient(90deg,#f093fb,#f5576c);}
+.kpi-card.teal::before{background:linear-gradient(90deg,#4fd1c5,#38b2ac);}
+.kpi-card.purple::before{background:linear-gradient(90deg,#b794f4,#9f7aea);}
+.kpi-card.yellow::before{background:linear-gradient(90deg,#f6e05e,#d69e2e);}
+.kpi-label{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.kpi-value{font-size:28px;font-weight:700;color:#f7fafc;margin-bottom:6px;}
+.kpi-delta{font-size:12px;}
+.kpi-delta.up{color:#48bb78;}
+.kpi-delta.down{color:#fc8181;}
+.kpi-icon{position:absolute;top:20px;right:20px;font-size:24px;opacity:.15;}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+.charts-row-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:22px 24px;}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.card-title{font-size:14px;font-weight:600;color:#e2e8f0;}
+.card-subtitle{font-size:11px;color:#718096;margin-top:2px;}
+.card-badge{font-size:11px;background:#2d3748;color:#a0aec0;padding:3px 10px;border-radius:12px;}
+canvas{max-height:220px;}
+.funnel{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.funnel-row{display:flex;align-items:center;gap:12px;}
+.funnel-label{font-size:12px;color:#a0aec0;width:100px;flex-shrink:0;}
+.funnel-bar-wrap{flex:1;background:#2d3748;border-radius:4px;height:28px;position:relative;}
+.funnel-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:600;color:#fff;transition:width .4s;}
+.funnel-val{font-size:12px;color:#a0aec0;width:60px;text-align:right;flex-shrink:0;}
+.channel-table{width:100%;border-collapse:collapse;margin-top:4px;}
+.channel-table th{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:1px solid #2d3748;}
+.channel-table td{font-size:13px;color:#cbd5e0;padding:10px 10px;border-bottom:1px solid #1e2535;}
+.channel-table tr:last-child td{border-bottom:none;}
+.channel-table tr:hover td{background:#202637;}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}.charts-row,.charts-row-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">📣</div>
+    <div><h1>Marketing &amp; Growth Dashboard</h1><span>Portfolio Demo · Simulated Data</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span class="badge">● LIVE VIEW</span>
+    <a href="index.html" class="nav-link">← Portfolio Home</a>
+  </div>
+</header>
+<div class="filters">
+  <span class="filter-label">Filters</span>
+  <select id="periodFilter" onchange="applyFilters()">
+    <option value="q1">Q1 2026</option>
+    <option value="q2">Q2 2025</option>
+    <option value="q3">Q3 2025</option>
+    <option value="q4" selected>Q4 2025</option>
+    <option value="fy">Full Year 2025</option>
+  </select>
+  <select id="channelFilter" onchange="applyFilters()">
+    <option value="all">All Channels</option>
+    <option value="paid">Paid Search</option>
+    <option value="organic">Organic</option>
+    <option value="social">Social</option>
+    <option value="email">Email</option>
+  </select>
+  <select id="regionFilter" onchange="applyFilters()">
+    <option value="all">All Regions</option>
+    <option value="na">North America</option>
+    <option value="emea">EMEA</option>
+    <option value="apac">APAC</option>
+  </select>
+  <button class="reset-btn" onclick="resetFilters()">↺ Reset</button>
+</div>
+<main>
+  <div class="kpi-row">
+    <div class="kpi-card pink"><div class="kpi-icon">👥</div><div class="kpi-label">Total Leads</div><div class="kpi-value" id="kpi-leads"></div><div class="kpi-delta" id="kpi-ldelta"></div></div>
+    <div class="kpi-card teal"><div class="kpi-icon">💵</div><div class="kpi-label">Cost per Lead</div><div class="kpi-value" id="kpi-cpl"></div><div class="kpi-delta" id="kpi-cdelta"></div></div>
+    <div class="kpi-card purple"><div class="kpi-icon">🔄</div><div class="kpi-label">MQL → SQL Rate</div><div class="kpi-value" id="kpi-conv"></div><div class="kpi-delta" id="kpi-convdelta"></div></div>
+    <div class="kpi-card yellow"><div class="kpi-icon">📊</div><div class="kpi-label">Campaign ROI</div><div class="kpi-value" id="kpi-roi"></div><div class="kpi-delta" id="kpi-roidelta"></div></div>
+  </div>
+  <div class="charts-row">
+    <div class="card"><div class="card-header"><div><div class="card-title">Lead Volume by Month</div><div class="card-subtitle">MQLs and SQLs over time</div></div><span class="card-badge">Monthly</span></div><canvas id="leadChart"></canvas></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Traffic by Channel</div><div class="card-subtitle">Share of total sessions</div></div></div><canvas id="channelChart"></canvas></div>
+  </div>
+  <div class="charts-row-2">
+    <div class="card"><div class="card-header"><div><div class="card-title">Conversion Funnel</div><div class="card-subtitle">Visitor → Customer</div></div></div><div class="funnel" id="funnelViz"></div></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Campaign Performance</div><div class="card-subtitle">Spend vs conversions by channel</div></div></div><canvas id="campaignChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div><div class="card-title">Channel Attribution Table</div><div class="card-subtitle">Leads, spend, CPL and conversion rate by channel</div></div><span class="card-badge">All Channels</span></div>
+    <table class="channel-table"><thead><tr><th>Channel</th><th>Leads</th><th>MQLs</th><th>SQLs</th><th>Spend</th><th>CPL</th><th>Conv Rate</th></tr></thead><tbody id="channelBody"></tbody></table>
+  </div>
+</main>
+<script>
+const DATA={
+  q4:{leads:"8,342",cpl:"$41",conv:"28.4%",roi:"312%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+22.1%",cDelta:"-8.3%",convDelta:"+4.2pp",roiDelta:"+41pp",mqls:[480,520,610,580,640,700,720,680,740,810,880,980],sqls:[130,145,172,160,185,198,210,192,218,236,258,291],channel:[38,24,21,11,6],funnel:[{l:"Visitors",v:148200,pct:100,col:"#b794f4"},{l:"Leads",v:8342,pct:5.6,col:"#9f7aea"},{l:"MQLs",v:2968,pct:2.0,col:"#805ad5"},{l:"SQLs",v:843,pct:0.57,col:"#6b46c1"},{l:"Customers",v:143,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:98,conv:312},{ch:"Email",spend:12,conv:241},{ch:"Social",spend:44,conv:198},{ch:"Organic",spend:8,conv:174},{ch:"Events",spend:31,conv:88}],channels:[{name:"Paid Search",col:"#b794f4",leads:3168,mqls:1102,sqls:320,spend:"$98K",cpl:"$31",conv:"10.1%"},{name:"Organic SEO",col:"#4fd1c5",leads:2002,mqls:720,sqls:202,spend:"$8K",cpl:"$4",conv:"10.1%"},{name:"Social Media",col:"#f093fb",leads:1752,mqls:594,sqls:160,spend:"$44K",cpl:"$25",conv:"9.1%"},{name:"Email",col:"#f6e05e",leads:918,mqls:381,sqls:118,spend:"$12K",cpl:"$13",conv:"12.8%"},{name:"Events",col:"#68d391",leads:502,mqls:171,sqls:43,spend:"$31K",cpl:"$62",conv:"8.6%"}]},
+  q3:{leads:"6,831",cpl:"$44",conv:"24.2%",roi:"271%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+14.8%",cDelta:"-4.1%",convDelta:"+2.1pp",roiDelta:"+28pp",mqls:[390,430,510,480,530,580,600,560,620,680,730,820],sqls:[104,116,138,126,146,160,168,152,174,194,210,237],channel:[35,26,22,11,6],funnel:[{l:"Visitors",v:121400,pct:100,col:"#b794f4"},{l:"Leads",v:6831,pct:5.6,col:"#9f7aea"},{l:"MQLs",v:2286,pct:1.9,col:"#805ad5"},{l:"SQLs",v:553,pct:0.46,col:"#6b46c1"},{l:"Customers",v:127,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:88,conv:271},{ch:"Email",spend:10,conv:218},{ch:"Social",spend:38,conv:176},{ch:"Organic",spend:7,conv:155},{ch:"Events",spend:28,conv:74}],channels:[{name:"Paid Search",col:"#b794f4",leads:2391,mqls:800,sqls:221,spend:"$88K",cpl:"$37",conv:"9.2%"},{name:"Organic SEO",col:"#4fd1c5",leads:1776,mqls:617,sqls:162,spend:"$7K",cpl:"$4",conv:"9.1%"},{name:"Social Media",col:"#f093fb",leads:1503,mqls:489,sqls:122,spend:"$38K",cpl:"$25",conv:"8.1%"},{name:"Email",col:"#f6e05e",leads:751,mqls:295,sqls:88,spend:"$10K",cpl:"$13",conv:"11.7%"},{name:"Events",col:"#68d391",leads:410,mqls:85,sqls:0,spend:"$28K",cpl:"$68",conv:"0%"}]},
+  q2:{leads:"5,951",cpl:"$46",conv:"22.1%",roi:"243%",lUp:true,cUp:false,convUp:false,roiUp:true,lDelta:"+9.3%",cDelta:"-2.2%",convDelta:"-0.8pp",roiDelta:"+18pp",mqls:[320,360,420,400,440,480,500,470,520,571,612,680],sqls:[84,96,112,104,118,128,136,122,142,158,172,196],channel:[33,27,23,11,6],funnel:[{l:"Visitors",v:104200,pct:100,col:"#b794f4"},{l:"Leads",v:5951,pct:5.7,col:"#9f7aea"},{l:"MQLs",v:1906,pct:1.8,col:"#805ad5"},{l:"SQLs",v:421,pct:0.40,col:"#6b46c1"},{l:"Customers",v:112,pct:0.11,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:78,conv:243},{ch:"Email",spend:9,conv:198},{ch:"Social",spend:34,conv:154},{ch:"Organic",spend:6,conv:141},{ch:"Events",spend:0,conv:0}],channels:[{name:"Paid Search",col:"#b794f4",leads:1964,mqls:629,sqls:168,spend:"$78K",cpl:"$40",conv:"8.6%"},{name:"Organic SEO",col:"#4fd1c5",leads:1607,mqls:552,sqls:142,spend:"$6K",cpl:"$4",conv:"8.8%"},{name:"Social Media",col:"#f093fb",leads:1369,mqls:420,sqls:100,spend:"$34K",cpl:"$25",conv:"7.3%"},{name:"Email",col:"#f6e05e",leads:655,mqls:260,sqls:75,spend:"$9K",cpl:"$14",conv:"11.5%"},{name:"Events",col:"#68d391",leads:356,mqls:45,sqls:0,spend:"—",cpl:"—",conv:"0%"}]},
+  q1:{leads:"5,442",cpl:"$47",conv:"21.3%",roi:"225%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+6.1%",cDelta:"-1.1%",convDelta:"+1.2pp",roiDelta:"+12pp",mqls:[290,320,380,360,400,440,460,420,470,520,561,621],sqls:[76,84,101,96,108,118,124,110,130,146,160,181],channel:[31,28,24,11,6],funnel:[{l:"Visitors",v:94800,pct:100,col:"#b794f4"},{l:"Leads",v:5442,pct:5.7,col:"#9f7aea"},{l:"MQLs",v:1660,pct:1.8,col:"#805ad5"},{l:"SQLs",v:354,pct:0.37,col:"#6b46c1"},{l:"Customers",v:98,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:70,conv:225},{ch:"Email",spend:8,conv:181},{ch:"Social",spend:30,conv:138},{ch:"Organic",spend:5,conv:128},{ch:"Events",spend:0,conv:0}],channels:[{name:"Paid Search",col:"#b794f4",leads:1687,mqls:498,sqls:128,spend:"$70K",cpl:"$41",conv:"7.6%"},{name:"Organic SEO",col:"#4fd1c5",leads:1524,mqls:498,sqls:124,spend:"$5K",cpl:"$3",conv:"8.1%"},{name:"Social Media",col:"#f093fb",leads:1306,mqls:382,sqls:88,spend:"$30K",cpl:"$23",conv:"6.7%"},{name:"Email",col:"#f6e05e",leads:598,mqls:232,sqls:66,spend:"$8K",cpl:"$13",conv:"11.0%"},{name:"Events",col:"#68d391",leads:327,mqls:50,sqls:0,spend:"—",cpl:"—",conv:"0%"}]},
+  fy:{leads:"26,566",cpl:"$43",conv:"25.8%",roi:"289%",lUp:true,cUp:false,convUp:true,roiUp:true,lDelta:"+16.2%",cDelta:"-5.9%",convDelta:"+2.8pp",roiDelta:"+32pp",mqls:[1480,1630,1920,1820,2010,2200,2280,2122,2352,2581,2783,3101],sqls:[394,441,523,486,557,604,638,576,664,734,800,905],channel:[34,26,22,11,7],funnel:[{l:"Visitors",v:468600,pct:100,col:"#b794f4"},{l:"Leads",v:26566,pct:5.7,col:"#9f7aea"},{l:"MQLs",v:8820,pct:1.9,col:"#805ad5"},{l:"SQLs",v:2171,pct:0.46,col:"#6b46c1"},{l:"Customers",v:480,pct:0.10,col:"#553c9a"}],campaigns:[{ch:"Paid Search",spend:334,conv:289},{ch:"Email",spend:39,conv:238},{ch:"Social",spend:146,conv:166},{ch:"Organic",spend:26,conv:152},{ch:"Events",spend:59,conv:62}],channels:[{name:"Paid Search",col:"#b794f4",leads:9032,mqls:3029,sqls:839,spend:"$334K",cpl:"$37",conv:"9.3%"},{name:"Organic SEO",col:"#4fd1c5",leads:6909,mqls:2387,sqls:630,spend:"$26K",cpl:"$4",conv:"9.1%"},{name:"Social Media",col:"#f093fb",leads:5845,mqls:1885,sqls:470,spend:"$146K",cpl:"$25",conv:"8.0%"},{name:"Email",col:"#f6e05e",leads:2922,mqls:1168,sqls:347,spend:"$39K",cpl:"$13",conv:"11.9%"},{name:"Events",col:"#68d391",leads:1595,mqls:351,sqls:43,spend:"$59K",cpl:"$37",conv:"2.7%"}]}
+};
+const MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let charts={};
+function kill(){Object.values(charts).forEach(c=>c.destroy());charts={};}
+function render(p){
+  kill();const d=DATA[p];
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  const cls=(id,v,up)=>{const el=document.getElementById(id);el.textContent=v+" vs prev period";el.className="kpi-delta "+(up?"up":"down");};
+  set("kpi-leads",d.leads);set("kpi-cpl",d.cpl);set("kpi-conv",d.conv);set("kpi-roi",d.roi);
+  cls("kpi-ldelta",d.lDelta,d.lUp);cls("kpi-cdelta",d.cDelta,d.cUp);cls("kpi-convdelta",d.convDelta,d.convUp);cls("kpi-roidelta",d.roiDelta,d.roiUp);
+  charts.lead=new Chart(document.getElementById("leadChart"),{type:"bar",data:{labels:MO,datasets:[{label:"MQLs",data:d.mqls,backgroundColor:"rgba(183,148,244,0.7)",borderRadius:4},{label:"SQLs",data:d.sqls,backgroundColor:"rgba(79,209,197,0.7)",borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:"#a0aec0"}}},scales:{x:{ticks:{color:"#718096"},grid:{color:"#2d3748"}},y:{ticks:{color:"#718096"},grid:{color:"#2d3748"}}}}});
+  charts.ch=new Chart(document.getElementById("channelChart"),{type:"doughnut",data:{labels:["Paid Search","Organic","Social","Email","Events"],datasets:[{data:d.channel,backgroundColor:["#b794f4","#4fd1c5","#f093fb","#f6e05e","#68d391"],borderWidth:0}]},options:{responsive:true,cutout:"68%",plugins:{legend:{position:"bottom",labels:{color:"#a0aec0",padding:14}}}}});
+  const maxV=d.funnel[0].v;
+  document.getElementById("funnelViz").innerHTML=d.funnel.map(f=>`<div class="funnel-row"><div class="funnel-label">${f.l}</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${(f.v/maxV*100).toFixed(1)}%;background:${f.col}">${f.v.toLocaleString()}</div></div><div class="funnel-val">${f.pct}%</div></div>`).join("");
+  charts.camp=new Chart(document.getElementById("campaignChart"),{type:"bar",data:{labels:d.campaigns.map(c=>c.ch),datasets:[{label:"Spend ($K)",data:d.campaigns.map(c=>c.spend),backgroundColor:"rgba(183,148,244,0.7)",borderRadius:4},{label:"Conversions",data:d.campaigns.map(c=>c.conv),backgroundColor:"rgba(79,209,197,0.7)",borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:"#a0aec0"}}},scales:{x:{ticks:{color:"#718096"},grid:{display:false}},y:{ticks:{color:"#718096"},grid:{color:"#2d3748"}}}}});
+  document.getElementById("channelBody").innerHTML=d.channels.map(c=>`<tr><td><span class="dot" style="background:${c.col}"></span>${c.name}</td><td>${c.leads.toLocaleString()}</td><td>${c.mqls.toLocaleString()}</td><td>${c.sqls.toLocaleString()}</td><td>${c.spend}</td><td>${c.cpl}</td><td>${c.conv}</td></tr>`).join("");
+}
+function applyFilters(){render(document.getElementById("periodFilter").value);}
+function resetFilters(){document.getElementById("periodFilter").value="q4";document.getElementById("channelFilter").value="all";document.getElementById("regionFilter").value="all";render("q4");}
+render("q4");
+</script>
+</body>
+</html>

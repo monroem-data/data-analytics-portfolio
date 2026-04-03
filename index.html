@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Analytics Portfolio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;}
+header{background:linear-gradient(135deg,#1a1f2e,#16213e);border-bottom:1px solid #2d3748;padding:32px;}
+.hero{max-width:900px;}
+.hero-tag{display:inline-block;background:#2d3748;color:#a0aec0;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.5px;margin-bottom:20px;}
+.hero h1{font-size:36px;font-weight:800;color:#f7fafc;line-height:1.2;margin-bottom:12px;}
+.hero h1 span{background:linear-gradient(90deg,#667eea,#48bb78,#ed8936);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:16px;color:#a0aec0;line-height:1.7;max-width:620px;margin-bottom:24px;}
+.skills{display:flex;gap:10px;flex-wrap:wrap;}
+.skill-tag{background:#1a2535;border:1px solid #2d3748;color:#a0aec0;padding:5px 14px;border-radius:20px;font-size:12px;}
+main{padding:48px 32px;max-width:1200px;}
+.section-title{font-size:22px;font-weight:700;color:#f7fafc;margin-bottom:8px;}
+.section-sub{font-size:14px;color:#718096;margin-bottom:32px;}
+.dashboards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:56px;}
+.dash-card{background:#1a1f2e;border:1px solid #2d3748;border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;cursor:pointer;}
+.dash-card:hover{transform:translateY(-4px);border-color:#4a5568;}
+.dash-preview{height:160px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;}
+.dash-preview.sales{background:linear-gradient(135deg,#1a1a3e,#2d1f5e);}
+.dash-preview.marketing{background:linear-gradient(135deg,#2d1a3e,#4a1a3e);}
+.dash-preview.finance{background:linear-gradient(135deg,#1a2d1a,#1a3d2a);}
+.preview-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:600;padding:3px 10px;border-radius:10px;}
+.preview-badge.sales{background:rgba(102,126,234,0.2);color:#667eea;}
+.preview-badge.marketing{background:rgba(183,148,244,0.2);color:#b794f4;}
+.preview-badge.finance{background:rgba(72,187,120,0.2);color:#48bb78;}
+.mini-bars{position:absolute;bottom:16px;left:16px;right:16px;display:flex;gap:4px;align-items:flex-end;height:48px;}
+.mini-bar{flex:1;border-radius:3px 3px 0 0;opacity:.7;}
+.dash-body{padding:20px;}
+.dash-title{font-size:16px;font-weight:700;color:#f7fafc;margin-bottom:6px;}
+.dash-desc{font-size:13px;color:#718096;line-height:1.6;margin-bottom:16px;}
+.dash-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.dash-tag{font-size:11px;background:#2d3748;color:#a0aec0;padding:3px 10px;border-radius:10px;}
+.dash-link{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;padding:9px 20px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;transition:opacity .2s;}
+.dash-link.marketing{background:linear-gradient(90deg,#b794f4,#f5576c);}
+.dash-link.finance{background:linear-gradient(90deg,#43e97b,#38f9d7);color:#1a2d1a;}
+.dash-link:hover{opacity:.85;}
+.about{background:#1a1f2e;border:1px solid #2d3748;border-radius:16px;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+.about h3{font-size:16px;font-weight:700;color:#f7fafc;margin-bottom:16px;}
+.about-item{display:flex;gap:12px;margin-bottom:14px;}
+.about-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.about-text strong{display:block;font-size:13px;color:#e2e8f0;margin-bottom:2px;}
+.about-text span{font-size:12px;color:#718096;}
+footer{border-top:1px solid #2d3748;padding:24px 32px;display:flex;justify-content:space-between;align-items:center;}
+.footer-note{font-size:12px;color:#4a5568;}
+@media(max-width:900px){.dashboards{grid-template-columns:1fr}.about{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="hero-tag">📊 DATA ANALYTICS PORTFOLIO</div>
+    <h1>Turning Data Into<br><span>Actionable Insights</span></h1>
+    <p>A collection of interactive dashboards showcasing expertise in sales analytics, marketing attribution, and financial reporting — built with the same analytical rigor as Tableau, Looker, and Power BI.</p>
+    <div class="skills">
+      <span class="skill-tag">📊 Tableau</span>
+      <span class="skill-tag">🔍 Looker</span>
+      <span class="skill-tag">📈 Power BI</span>
+      <span class="skill-tag">🐍 Python</span>
+      <span class="skill-tag">🗄️ SQL</span>
+      <span class="skill-tag">📉 Data Modeling</span>
+      <span class="skill-tag">🎯 KPI Strategy</span>
+      <span class="skill-tag">👥 Team Leadership</span>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="section-title">Interactive Dashboards</div>
+  <div class="section-sub">Click any dashboard to explore. All data is simulated for portfolio purposes.</div>
+  <div class="dashboards">
+    <div class="dash-card" onclick="location.href='sales-dashboard.html'">
+      <div class="dash-preview sales">
+        <span>📊</span>
+        <span class="preview-badge sales">Sales</span>
+        <div class="mini-bars">
+          <div class="mini-bar" style="height:30%;background:#667eea"></div>
+          <div class="mini-bar" style="height:55%;background:#667eea"></div>
+          <div class="mini-bar" style="height:45%;background:#667eea"></div>
+          <div class="mini-bar" style="height:70%;background:#667eea"></div>
+          <div class="mini-bar" style="height:60%;background:#667eea"></div>
+          <div class="mini-bar" style="height:85%;background:#667eea"></div>
+          <div class="mini-bar" style="height:75%;background:#667eea"></div>
+          <div class="mini-bar" style="height:95%;background:#667eea"></div>
+        </div>
+      </div>
+      <div class="dash-body">
+        <div class="dash-title">Sales & Revenue Dashboard</div>
+        <div class="dash-desc">Pipeline analysis, rep performance leaderboard, quota attainment, win/loss reasons, and revenue trends vs targets.</div>
+        <div class="dash-tags"><span class="dash-tag">Revenue Trends</span><span class="dash-tag">Pipeline</span><span class="dash-tag">Rep Performance</span><span class="dash-tag">Win Rate</span></div>
+        <a href="sales-dashboard.html" class="dash-link">View Dashboard →</a>
+      </div>
+    </div>
+    <div class="dash-card" onclick="location.href='marketing-dashboard.html'">
+      <div class="dash-preview marketing">
+        <span>📣</span>
+        <span class="preview-badge marketing">Marketing</span>
+        <div class="mini-bars">
+          <div class="mini-bar" style="height:40%;background:#b794f4"></div>
+          <div class="mini-bar" style="height:65%;background:#b794f4"></div>
+          <div class="mini-bar" style="height:50%;background:#b794f4"></div>
+          <div class="mini-bar" style="height:80%;background:#b794f4"></div>
+          <div class="mini-bar" style="height:70%;background:#b794f4"></div>
+          <div class="mini-bar" style="height:90%;background:#b794f4"></div>
+          <div class="mini-bar" style="height:78%;background:#b794f4"></div>
+          <div class="mini-bar" style="height:100%;background:#b794f4"></div>
+        </div>
+      </div>
+      <div class="dash-body">
+        <div class="dash-title">Marketing & Growth Dashboard</div>
+        <div class="dash-desc">Lead funnel, MQL/SQL conversion rates, channel attribution, campaign ROI, and cost-per-lead by source.</div>
+        <div class="dash-tags"><span class="dash-tag">Lead Funnel</span><span class="dash-tag">Attribution</span><span class="dash-tag">Campaign ROI</span><span class="dash-tag">CAC</span></div>
+        <a href="marketing-dashboard.html" class="dash-link marketing">View Dashboard →</a>
+      </div>
+    </div>
+    <div class="dash-card" onclick="location.href='finance-dashboard.html'">
+      <div class="dash-preview finance">
+        <span>💹</span>
+        <span class="preview-badge finance">Finance</span>
+        <div class="mini-bars">
+          <div class="mini-bar" style="height:35%;background:#43e97b"></div>
+          <div class="mini-bar" style="height:50%;background:#43e97b"></div>
+          <div class="mini-bar" style="height:60%;background:#43e97b"></div>
+          <div class="mini-bar" style="height:55%;background:#43e97b"></div>
+          <div class="mini-bar" style="height:72%;background:#43e97b"></div>
+          <div class="mini-bar" style="height:80%;background:#43e97b"></div>
+          <div class="mini-bar" style="height:88%;background:#43e97b"></div>
+          <div class="mini-bar" style="height:100%;background:#43e97b"></div>
+        </div>
+      </div>
+      <div class="dash-body">
+        <div class="dash-title">Finance & Operations Dashboard</div>
+        <div class="dash-desc">P&L summary, budget vs actuals by department, cash flow trends, EBITDA tracking, and cost breakdown.</div>
+        <div class="dash-tags"><span class="dash-tag">P&L</span><span class="dash-tag">Budget vs Actual</span><span class="dash-tag">Cash Flow</span><span class="dash-tag">EBITDA</span></div>
+        <a href="finance-dashboard.html" class="dash-link finance">View Dashboard →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="about">
+    <div>
+      <h3>About This Portfolio</h3>
+      <div class="about-item"><div class="about-icon">🎯</div><div class="about-text"><strong>Built for Analytics Leadership Roles</strong><span>Demonstrates ability to design, build, and communicate with data across business functions.</span></div></div>
+      <div class="about-item"><div class="about-icon">🔧</div><div class="about-text"><strong>Tools & Technologies</strong><span>Tableau · Looker · Power BI · SQL · Python · dbt · Snowflake</span></div></div>
+      <div class="about-item"><div class="about-icon">📋</div><div class="about-text"><strong>All Data is Simulated</strong><span>No proprietary or real company data is used. All figures are illustrative.</span></div></div>
+    </div>
+    <div>
+      <h3>Dashboard Features</h3>
+      <div class="about-item"><div class="about-icon">🔽</div><div class="about-text"><strong>Interactive Filters</strong><span>Period, region, segment, and channel filters on every dashboard.</span></div></div>
+      <div class="about-item"><div class="about-icon">📊</div><div class="about-text"><strong>Multi-Chart Layouts</strong><span>KPI cards, trend lines, funnels, leaderboards, and P&L tables.</span></div></div>
+      <div class="about-item"><div class="about-icon">📱</div><div class="about-text"><strong>Responsive Design</strong><span>Works on desktop, tablet, and mobile — no login or software required.</span></div></div>
+    </div>
+  </div>
+</main>
+<footer>
+  <span class="footer-note">Data Analytics Portfolio · All data simulated for demonstration purposes</span>
+  <span class="footer-note">Built with HTML, CSS & Chart.js</span>
+</footer>
+</body>
+</html>

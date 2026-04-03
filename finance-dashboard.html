@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance & Operations Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;}
+header{background:linear-gradient(135deg,#1a1f2e,#16213e);border-bottom:1px solid #2d3748;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#43e97b,#38f9d7);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo h1{font-size:18px;font-weight:700;color:#f7fafc;}
+.logo span{font-size:12px;color:#718096;display:block;}
+.badge{background:#1a3a2a;color:#68d391;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+.nav-link{color:#a0aec0;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #2d3748;border-radius:6px;}
+.nav-link:hover{color:#68d391;border-color:#68d391;}
+.filters{background:#1a1f2e;border-bottom:1px solid #2d3748;padding:12px 32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.filter-label{font-size:12px;color:#718096;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+select{background:#2d3748;border:1px solid #4a5568;color:#e2e8f0;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;outline:none;}
+select:hover{border-color:#68d391;}
+.reset-btn{background:transparent;border:1px solid #4a5568;color:#a0aec0;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;}
+.reset-btn:hover{border-color:#68d391;color:#68d391;}
+main{padding:28px 32px;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
+.kpi-card{background:linear-gradient(135deg,#1a1f2e,#1e2535);border:1px solid #2d3748;border-radius:12px;padding:20px 24px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-card.green::before{background:linear-gradient(90deg,#43e97b,#38f9d7);}
+.kpi-card.red::before{background:linear-gradient(90deg,#fc8181,#e53e3e);}
+.kpi-card.blue::before{background:linear-gradient(90deg,#63b3ed,#4299e1);}
+.kpi-card.gold::before{background:linear-gradient(90deg,#f6e05e,#d69e2e);}
+.kpi-label{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.kpi-value{font-size:28px;font-weight:700;color:#f7fafc;margin-bottom:6px;}
+.kpi-delta{font-size:12px;}
+.kpi-delta.up{color:#48bb78;}
+.kpi-delta.down{color:#fc8181;}
+.kpi-icon{position:absolute;top:20px;right:20px;font-size:24px;opacity:.15;}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+.charts-row-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:22px 24px;}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.card-title{font-size:14px;font-weight:600;color:#e2e8f0;}
+.card-subtitle{font-size:11px;color:#718096;margin-top:2px;}
+.card-badge{font-size:11px;background:#2d3748;color:#a0aec0;padding:3px 10px;border-radius:12px;}
+canvas{max-height:220px;}
+.budget-rows{display:flex;flex-direction:column;gap:14px;margin-top:4px;}
+.budget-item{}
+.budget-meta{display:flex;justify-content:space-between;margin-bottom:6px;}
+.budget-dept{font-size:13px;color:#e2e8f0;font-weight:500;}
+.budget-nums{font-size:12px;color:#a0aec0;}
+.budget-track{height:8px;background:#2d3748;border-radius:4px;}
+.budget-fill{height:100%;border-radius:4px;}
+.pl-table{width:100%;border-collapse:collapse;}
+.pl-table th{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid #2d3748;}
+.pl-table td{font-size:13px;color:#cbd5e0;padding:10px 12px;border-bottom:1px solid #1e2535;}
+.pl-table tr.section-header td{color:#a0aec0;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:#16213e;padding:8px 12px;}
+.pl-table tr:last-child td{border-bottom:none;}
+.pl-table tr:hover td{background:#202637;}
+.num{text-align:right;}
+.positive{color:#48bb78;}
+.negative{color:#fc8181;}
+.neutral{color:#e2e8f0;}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}.charts-row,.charts-row-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">💹</div>
+    <div><h1>Finance &amp; Operations Dashboard</h1><span>Portfolio Demo · Simulated Data</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span class="badge">● LIVE VIEW</span>
+    <a href="index.html" class="nav-link">← Portfolio Home</a>
+  </div>
+</header>
+<div class="filters">
+  <span class="filter-label">Filters</span>
+  <select id="periodFilter" onchange="applyFilters()">
+    <option value="q1">Q1 2026</option>
+    <option value="q2">Q2 2025</option>
+    <option value="q3">Q3 2025</option>
+    <option value="q4" selected>Q4 2025</option>
+    <option value="fy">Full Year 2025</option>
+  </select>
+  <select id="deptFilter" onchange="applyFilters()">
+    <option value="all">All Departments</option>
+    <option value="sales">Sales</option>
+    <option value="marketing">Marketing</option>
+    <option value="eng">Engineering</option>
+    <option value="ops">Operations</option>
+  </select>
+  <button class="reset-btn" onclick="resetFilters()">↺ Reset</button>
+</div>
+<main>
+  <div class="kpi-row">
+    <div class="kpi-card green"><div class="kpi-icon">💰</div><div class="kpi-label">Gross Revenue</div><div class="kpi-value" id="kpi-rev"></div><div class="kpi-delta" id="kpi-rdelta"></div></div>
+    <div class="kpi-card red"><div class="kpi-icon">📉</div><div class="kpi-label">Operating Costs</div><div class="kpi-value" id="kpi-costs"></div><div class="kpi-delta" id="kpi-cdelta"></div></div>
+    <div class="kpi-card blue"><div class="kpi-icon">📊</div><div class="kpi-label">Gross Margin</div><div class="kpi-value" id="kpi-margin"></div><div class="kpi-delta" id="kpi-mdelta"></div></div>
+    <div class="kpi-card gold"><div class="kpi-icon">🏦</div><div class="kpi-label">EBITDA</div><div class="kpi-value" id="kpi-ebitda"></div><div class="kpi-delta" id="kpi-edelta"></div></div>
+  </div>
+  <div class="charts-row">
+    <div class="card"><div class="card-header"><div><div class="card-title">Revenue vs Expenses</div><div class="card-subtitle">Monthly trend</div></div><span class="card-badge">Monthly</span></div><canvas id="revExpChart"></canvas></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Cost Breakdown</div><div class="card-subtitle">By category</div></div></div><canvas id="costChart"></canvas></div>
+  </div>
+  <div class="charts-row-2">
+    <div class="card"><div class="card-header"><div><div class="card-title">Budget vs Actuals</div><div class="card-subtitle">By department</div></div></div><div class="budget-rows" id="budgetRows"></div></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Cash Flow</div><div class="card-subtitle">Operating cash flow by month</div></div></div><canvas id="cashChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div><div class="card-title">P&amp;L Summary</div><div class="card-subtitle">Income statement overview</div></div><span class="card-badge">Period View</span></div>
+    <table class="pl-table"><thead><tr><th>Line Item</th><th class="num">Budget</th><th class="num">Actual</th><th class="num">Variance</th><th class="num">Var %</th></tr></thead><tbody id="plBody"></tbody></table>
+  </div>
+</main>
+<script>
+const DATA={
+  q4:{rev:"$4.82M",costs:"$3.21M",margin:"33.4%",ebitda:"$1.61M",rUp:true,cUp:false,mUp:true,eUp:true,rDelta:"+18.4%",cDelta:"+6.2%",mDelta:"+3.1pp",eDelta:"+24.1%",revM:[310,380,420,510,480,560,620,590,680,720,760,800],expM:[210,248,274,326,312,361,398,380,436,460,485,510],costs:[42,28,18,12],cash:[100,132,146,184,168,199,222,210,244,260,275,290],budget:[{dept:"Sales",budget:820,actual:788,col:"#43e97b"},{dept:"Marketing",budget:250,actual:246,col:"#63b3ed"},{dept:"Engineering",budget:640,actual:671,col:"#f093fb"},{dept:"Operations",budget:380,actual:362,col:"#f6e05e"},{dept:"G&A",budget:210,actual:198,col:"#fc8181"}],pl:[{item:"Gross Revenue",budget:"$5.10M",actual:"$4.82M",var:"-$0.28M",vp:"-5.5%",cls:"negative",section:false},{item:"Cost of Goods Sold",budget:"$1.63M",actual:"$1.54M",var:"+$0.09M",vp:"+5.5%",cls:"positive",section:false},{item:"Gross Profit",budget:"$3.47M",actual:"$3.28M",var:"-$0.19M",vp:"-5.5%",cls:"negative",section:false},{item:"Operating Expenses",budget:"",actual:"",var:"",vp:"",cls:"",section:true},{item:"Sales & Marketing",budget:"$1.07M",actual:"$1.03M",var:"+$0.04M",vp:"+3.7%",cls:"positive",section:false},{item:"R&D / Engineering",budget:"$0.64M",actual:"$0.67M",var:"-$0.03M",vp:"-4.7%",cls:"negative",section:false},{item:"G&A",budget:"$0.21M",actual:"$0.20M",var:"+$0.01M",vp:"+4.8%",cls:"positive",section:false},{item:"EBITDA",budget:"$1.55M",actual:"$1.61M",var:"+$0.06M",vp:"+3.9%",cls:"positive",section:false}]},
+  q3:{rev:"$4.07M",costs:"$2.84M",margin:"30.2%",ebitda:"$1.23M",rUp:true,cUp:false,mUp:true,eUp:true,rDelta:"+11.2%",cDelta:"+4.8%",mDelta:"+1.8pp",eDelta:"+18.3%",revM:[260,310,350,420,390,440,510,490,580,620,660,740],expM:[184,218,246,290,272,306,353,339,400,428,455,510],costs:[44,27,17,12],cash:[76,92,104,130,118,134,157,151,180,192,205,230],budget:[{dept:"Sales",budget:700,actual:671,col:"#43e97b"},{dept:"Marketing",budget:212,actual:208,col:"#63b3ed"},{dept:"Engineering",budget:540,actual:562,col:"#f093fb"},{dept:"Operations",budget:320,actual:306,col:"#f6e05e"},{dept:"G&A",budget:178,actual:168,col:"#fc8181"}],pl:[{item:"Gross Revenue",budget:"$4.30M",actual:"$4.07M",var:"-$0.23M",vp:"-5.3%",cls:"negative",section:false},{item:"Cost of Goods Sold",budget:"$1.42M",actual:"$1.30M",var:"+$0.12M",vp:"+8.5%",cls:"positive",section:false},{item:"Gross Profit",budget:"$2.88M",actual:"$2.77M",var:"-$0.11M",vp:"-3.8%",cls:"negative",section:false},{item:"Operating Expenses",budget:"",actual:"",var:"",vp:"",cls:"",section:true},{item:"Sales & Marketing",budget:"$0.91M",actual:"$0.88M",var:"+$0.03M",vp:"+3.3%",cls:"positive",section:false},{item:"R&D / Engineering",budget:"$0.54M",actual:"$0.56M",var:"-$0.02M",vp:"-3.7%",cls:"negative",section:false},{item:"G&A",budget:"$0.18M",actual:"$0.17M",var:"+$0.01M",vp:"+5.6%",cls:"positive",section:false},{item:"EBITDA",budget:"$1.25M",actual:"$1.23M",var:"-$0.02M",vp:"-1.6%",cls:"negative",section:false}]},
+  q2:{rev:"$3.66M",costs:"$2.58M",margin:"29.5%",ebitda:"$1.08M",rUp:true,cUp:false,mUp:false,eUp:true,rDelta:"+9.8%",cDelta:"+5.1%",mDelta:"-0.4pp",eDelta:"+14.2%",revM:[210,270,310,360,340,380,420,400,480,520,570,680],expM:[152,194,222,256,244,272,299,286,341,369,404,480],costs:[45,27,17,11],cash:[58,76,88,104,96,108,121,114,139,151,166,200],budget:[{dept:"Sales",budget:620,actual:598,col:"#43e97b"},{dept:"Marketing",budget:188,actual:184,col:"#63b3ed"},{dept:"Engineering",budget:480,actual:501,col:"#f093fb"},{dept:"Operations",budget:285,actual:271,col:"#f6e05e"},{dept:"G&A",budget:158,actual:149,col:"#fc8181"}],pl:[{item:"Gross Revenue",budget:"$3.88M",actual:"$3.66M",var:"-$0.22M",vp:"-5.7%",cls:"negative",section:false},{item:"Cost of Goods Sold",budget:"$1.24M",actual:"$1.17M",var:"+$0.07M",vp:"+5.6%",cls:"positive",section:false},{item:"Gross Profit",budget:"$2.64M",actual:"$2.49M",var:"-$0.15M",vp:"-5.7%",cls:"negative",section:false},{item:"Operating Expenses",budget:"",actual:"",var:"",vp:"",cls:"",section:true},{item:"Sales & Marketing",budget:"$0.81M",actual:"$0.78M",var:"+$0.03M",vp:"+3.7%",cls:"positive",section:false},{item:"R&D / Engineering",budget:"$0.48M",actual:"$0.50M",var:"-$0.02M",vp:"-4.2%",cls:"negative",section:false},{item:"G&A",budget:"$0.16M",actual:"$0.15M",var:"+$0.01M",vp:"+6.3%",cls:"positive",section:false},{item:"EBITDA",budget:"$1.19M",actual:"$1.08M",var:"-$0.11M",vp:"-9.2%",cls:"negative",section:false}]},
+  q1:{rev:"$3.34M",costs:"$2.38M",margin:"28.7%",ebitda:"$0.96M",rUp:true,cUp:false,mUp:true,eUp:true,rDelta:"+7.2%",cDelta:"+3.9%",mDelta:"+0.9pp",eDelta:"+10.2%",revM:[180,230,270,310,290,340,380,360,430,470,510,620],expM:[132,168,196,224,210,246,274,261,312,340,371,450],costs:[45,27,17,11],cash:[48,62,74,86,80,94,106,99,118,130,139,170],budget:[{dept:"Sales",budget:560,actual:542,col:"#43e97b"},{dept:"Marketing",budget:168,actual:165,col:"#63b3ed"},{dept:"Engineering",budget:430,actual:448,col:"#f093fb"},{dept:"Operations",budget:254,actual:241,col:"#f6e05e"},{dept:"G&A",budget:141,actual:132,col:"#fc8181"}],pl:[{item:"Gross Revenue",budget:"$3.52M",actual:"$3.34M",var:"-$0.18M",vp:"-5.1%",cls:"negative",section:false},{item:"Cost of Goods Sold",budget:"$1.16M",actual:"$1.07M",var:"+$0.09M",vp:"+7.8%",cls:"positive",section:false},{item:"Gross Profit",budget:"$2.36M",actual:"$2.27M",var:"-$0.09M",vp:"-3.8%",cls:"negative",section:false},{item:"Operating Expenses",budget:"",actual:"",var:"",vp:"",cls:"",section:true},{item:"Sales & Marketing",budget:"$0.73M",actual:"$0.71M",var:"+$0.02M",vp:"+2.7%",cls:"positive",section:false},{item:"R&D / Engineering",budget:"$0.43M",actual:"$0.45M",var:"-$0.02M",vp:"-4.7%",cls:"negative",section:false},{item:"G&A",budget:"$0.14M",actual:"$0.13M",var:"+$0.01M",vp:"+7.1%",cls:"positive",section:false},{item:"EBITDA",budget:"$1.06M",actual:"$0.96M",var:"-$0.10M",vp:"-9.4%",cls:"negative",section:false}]},
+  fy:{rev:"$15.89M",costs:"$11.01M",margin:"30.7%",ebitda:"$4.88M",rUp:true,cUp:false,mUp:true,eUp:true,rDelta:"+14.9%",cDelta:"+5.8%",mDelta:"+1.6pp",eDelta:"+19.2%",revM:[960,1190,1350,1600,1500,1720,1930,1840,2170,2330,2500,3040],expM:[678,828,938,1096,1038,1185,1324,1266,1489,1597,1715,2087],costs:[44,27,17,12],cash:[282,362,412,484,462,528,606,574,662,733,785,950],budget:[{dept:"Sales",budget:2700,actual:2599,col:"#43e97b"},{dept:"Marketing",budget:818,actual:803,col:"#63b3ed"},{dept:"Engineering",budget:2090,actual:2182,col:"#f093fb"},{dept:"Operations",budget:1239,actual:1180,col:"#f6e05e"},{dept:"G&A",budget:687,actual:647,col:"#fc8181"}],pl:[{item:"Gross Revenue",budget:"$16.8M",actual:"$15.89M",var:"-$0.91M",vp:"-5.4%",cls:"negative",section:false},{item:"Cost of Goods Sold",budget:"$5.54M",actual:"$5.08M",var:"+$0.46M",vp:"+8.3%",cls:"positive",section:false},{item:"Gross Profit",budget:"$11.26M",actual:"$10.81M",var:"-$0.45M",vp:"-4.0%",cls:"negative",section:false},{item:"Operating Expenses",budget:"",actual:"",var:"",vp:"",cls:"",section:true},{item:"Sales & Marketing",budget:"$3.52M",actual:"$3.40M",var:"+$0.12M",vp:"+3.4%",cls:"positive",section:false},{item:"R&D / Engineering",budget:"$2.09M",actual:"$2.18M",var:"-$0.09M",vp:"-4.3%",cls:"negative",section:false},{item:"G&A",budget:"$0.69M",actual:"$0.65M",var:"+$0.04M",vp:"+5.8%",cls:"positive",section:false},{item:"EBITDA",budget:"$5.05M",actual:"$4.88M",var:"-$0.17M",vp:"-3.4%",cls:"negative",section:false}]}
+};
+const MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let charts={};
+function kill(){Object.values(charts).forEach(c=>c.destroy());charts={};}
+function render(p){
+  kill();const d=DATA[p];
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  const cls=(id,v,up)=>{const el=document.getElementById(id);el.textContent=v+" vs prev period";el.className="kpi-delta "+(up?"up":"down");};
+  set("kpi-rev",d.rev);set("kpi-costs",d.costs);set("kpi-margin",d.margin);set("kpi-ebitda",d.ebitda);
+  cls("kpi-rdelta",d.rDelta,d.rUp);cls("kpi-cdelta",d.cDelta,d.cUp);cls("kpi-mdelta",d.mDelta,d.mUp);cls("kpi-edelta",d.eDelta,d.eUp);
+  charts.re=new Chart(document.getElementById("revExpChart"),{type:"line",data:{labels:MO,datasets:[{label:"Revenue",data:d.revM,borderColor:"#43e97b",backgroundColor:"rgba(67,233,123,0.1)",tension:0.4,fill:true,pointRadius:3},{label:"Expenses",data:d.expM,borderColor:"#fc8181",backgroundColor:"rgba(252,129,129,0.08)",tension:0.4,fill:true,pointRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{color:"#a0aec0"}}},scales:{x:{ticks:{color:"#718096"},grid:{color:"#2d3748"}},y:{ticks:{color:"#718096"},grid:{color:"#2d3748"}}}}});
+  charts.cost=new Chart(document.getElementById("costChart"),{type:"doughnut",data:{labels:["Personnel","Infrastructure","Marketing","Other"],datasets:[{data:d.costs,backgroundColor:["#43e97b","#63b3ed","#f093fb","#f6e05e"],borderWidth:0}]},options:{responsive:true,cutout:"68%",plugins:{legend:{position:"bottom",labels:{color:"#a0aec0",padding:14}}}}});
+  document.getElementById("budgetRows").innerHTML=d.budget.map(b=>{const pct=Math.round(b.actual/b.budget*100);const over=b.actual>b.budget;return`<div class="budget-item"><div class="budget-meta"><span class="budget-dept">${b.dept}</span><span class="budget-nums" style="color:${over?"#fc8181":"#48bb78"}">${pct}% of budget · $${b.actual}K / $${b.budget}K</span></div><div class="budget-track"><div class="budget-fill" style="width:${Math.min(pct,100)}%;background:${over?"#fc8181":b.col}"></div></div></div>`;}).join("");
+  charts.cash=new Chart(document.getElementById("cashChart"),{type:"bar",data:{labels:MO,datasets:[{label:"Cash Flow ($K)",data:d.cash,backgroundColor:d.cash.map(v=>v>=0?"rgba(67,233,123,0.7)":"rgba(252,129,129,0.7)"),borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#718096"},grid:{display:false}},y:{ticks:{color:"#718096"},grid:{color:"#2d3748"}}}}});
+  document.getElementById("plBody").innerHTML=d.pl.map(r=>r.section?`<tr class="section-header"><td colspan="5">${r.item}</td></tr>`:`<tr><td>${r.item}</td><td class="num neutral">${r.budget}</td><td class="num neutral">${r.actual}</td><td class="num ${r.cls}">${r.var}</td><td class="num ${r.cls}">${r.vp}</td></tr>`).join("");
+}
+function applyFilters(){render(document.getElementById("periodFilter").value);}
+function resetFilters(){document.getElementById("periodFilter").value="q4";document.getElementById("deptFilter").value="all";render("q4");}
+render("q4");
+</script>
+</body>
+</html>

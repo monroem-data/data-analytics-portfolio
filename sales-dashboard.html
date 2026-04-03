@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales & Revenue Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;}
+header{background:linear-gradient(135deg,#1a1f2e,#16213e);border-bottom:1px solid #2d3748;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo h1{font-size:18px;font-weight:700;color:#f7fafc;}
+.logo span{font-size:12px;color:#718096;display:block;}
+.badge{background:#1a4731;color:#48bb78;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+.nav-link{color:#a0aec0;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #2d3748;border-radius:6px;}
+.nav-link:hover{color:#667eea;border-color:#667eea;}
+.filters{background:#1a1f2e;border-bottom:1px solid #2d3748;padding:12px 32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.filter-label{font-size:12px;color:#718096;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+select{background:#2d3748;border:1px solid #4a5568;color:#e2e8f0;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;outline:none;}
+select:hover{border-color:#667eea;}
+.reset-btn{background:transparent;border:1px solid #4a5568;color:#a0aec0;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;}
+.reset-btn:hover{border-color:#667eea;color:#667eea;}
+main{padding:28px 32px;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
+.kpi-card{background:linear-gradient(135deg,#1a1f2e,#1e2535);border:1px solid #2d3748;border-radius:12px;padding:20px 24px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-card.purple::before{background:linear-gradient(90deg,#667eea,#764ba2);}
+.kpi-card.green::before{background:linear-gradient(90deg,#48bb78,#38a169);}
+.kpi-card.blue::before{background:linear-gradient(90deg,#4299e1,#3182ce);}
+.kpi-card.orange::before{background:linear-gradient(90deg,#ed8936,#dd6b20);}
+.kpi-label{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.kpi-value{font-size:28px;font-weight:700;color:#f7fafc;margin-bottom:6px;}
+.kpi-delta{font-size:12px;}
+.kpi-delta.up{color:#48bb78;}
+.kpi-delta.down{color:#fc8181;}
+.kpi-icon{position:absolute;top:20px;right:20px;font-size:24px;opacity:.15;}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+.charts-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;}
+.card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:22px 24px;}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.card-title{font-size:14px;font-weight:600;color:#e2e8f0;}
+.card-subtitle{font-size:11px;color:#718096;margin-top:2px;}
+.card-badge{font-size:11px;background:#2d3748;color:#a0aec0;padding:3px 10px;border-radius:12px;}
+canvas{max-height:220px;}
+.pipeline-stages{display:flex;margin-top:4px;}
+.stage{flex:1;text-align:center;padding:10px 4px;}
+.stage-bar{height:8px;margin:0 4px 8px;border-radius:4px;}
+.stage-label{font-size:10px;color:#718096;}
+.stage-val{font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:2px;}
+.stage-count{font-size:10px;color:#718096;}
+.table-card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:22px 24px;}
+table{width:100%;border-collapse:collapse;margin-top:4px;}
+th{font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px;text-align:left;border-bottom:1px solid #2d3748;}
+td{font-size:13px;color:#cbd5e0;padding:11px 12px;border-bottom:1px solid #1e2535;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#202637;}
+.rep-name{font-weight:600;color:#e2e8f0;}
+.progress-bar{height:6px;background:#2d3748;border-radius:3px;margin-top:4px;}
+.progress-fill{height:100%;border-radius:3px;}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.tag.won{background:#1a4731;color:#48bb78;}
+.tag.risk{background:#441a1a;color:#fc8181;}
+.tag.track{background:#1a3350;color:#63b3ed;}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}.charts-row,.charts-row-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">📊</div>
+    <div><h1>Sales &amp; Revenue Dashboard</h1><span>Portfolio Demo · Simulated Data</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span class="badge">● LIVE VIEW</span>
+    <a href="index.html" class="nav-link">← Portfolio Home</a>
+  </div>
+</header>
+<div class="filters">
+  <span class="filter-label">Filters</span>
+  <select id="periodFilter" onchange="applyFilters()">
+    <option value="q1">Q1 2026</option>
+    <option value="q2">Q2 2025</option>
+    <option value="q3">Q3 2025</option>
+    <option value="q4" selected>Q4 2025</option>
+    <option value="fy">Full Year 2025</option>
+  </select>
+  <select id="regionFilter" onchange="applyFilters()">
+    <option value="all">All Regions</option>
+    <option value="north">North</option>
+    <option value="south">South</option>
+    <option value="east">East</option>
+    <option value="west">West</option>
+  </select>
+  <select id="segmentFilter" onchange="applyFilters()">
+    <option value="all">All Segments</option>
+    <option value="enterprise">Enterprise</option>
+    <option value="mid">Mid-Market</option>
+    <option value="smb">SMB</option>
+  </select>
+  <button class="reset-btn" onclick="resetFilters()">↺ Reset</button>
+</div>
+<main>
+  <div class="kpi-row">
+    <div class="kpi-card purple"><div class="kpi-icon">💰</div><div class="kpi-label">Total Revenue</div><div class="kpi-value" id="kpi-revenue"></div><div class="kpi-delta" id="kpi-rdelta"></div></div>
+    <div class="kpi-card green"><div class="kpi-icon">🎯</div><div class="kpi-label">Deals Closed</div><div class="kpi-value" id="kpi-deals"></div><div class="kpi-delta" id="kpi-ddelta"></div></div>
+    <div class="kpi-card blue"><div class="kpi-icon">📈</div><div class="kpi-label">Win Rate</div><div class="kpi-value" id="kpi-winrate"></div><div class="kpi-delta" id="kpi-wdelta"></div></div>
+    <div class="kpi-card orange"><div class="kpi-icon">⏱️</div><div class="kpi-label">Avg Deal Size</div><div class="kpi-value" id="kpi-dealsize"></div><div class="kpi-delta" id="kpi-sdelta"></div></div>
+  </div>
+  <div class="charts-row">
+    <div class="card"><div class="card-header"><div><div class="card-title">Revenue Trend</div><div class="card-subtitle">Monthly closed revenue vs target</div></div><span class="card-badge">Monthly</span></div><canvas id="revenueChart"></canvas></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Revenue by Segment</div><div class="card-subtitle">Share of total</div></div></div><canvas id="segmentChart"></canvas></div>
+  </div>
+  <div class="charts-row-3">
+    <div class="card"><div class="card-header"><div><div class="card-title">Sales Pipeline</div><div class="card-subtitle">Deals by stage</div></div></div><div class="pipeline-stages" id="pipelineStages"></div></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Win / Loss Reasons</div><div class="card-subtitle">Top factors</div></div></div><canvas id="winlossChart"></canvas></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Quota Attainment</div><div class="card-subtitle">By region</div></div></div><canvas id="quotaChart"></canvas></div>
+  </div>
+  <div class="table-card">
+    <div class="card-header"><div><div class="card-title">Rep Performance Leaderboard</div><div class="card-subtitle">Revenue, deals closed, and quota attainment</div></div><span class="card-badge">Top 6 Reps</span></div>
+    <table><thead><tr><th>#</th><th>Rep Name</th><th>Region</th><th>Revenue</th><th>Deals</th><th>Quota Attainment</th><th>Status</th></tr></thead><tbody id="repTableBody"></tbody></table>
+  </div>
+</main>
+<script>
+const DATA={
+  q4:{revenue:"$4.82M",deals:"143",winrate:"38.2%",dealSize:"$33.7K",revDelta:"+18.4%",revUp:true,dealsDelta:"+12.6%",dealsUp:true,wrDelta:"+3.1pp",wrUp:true,dsDelta:"-2.3%",dsUp:false,months:[310,380,420,510,480,560,620,590,680,720,760,800],targets:[350,350,400,450,500,520,570,600,640,680,720,760],seg:[52,31,17],pipeline:[{n:"Prospect",v:"$8.2M",c:214,col:"#4a5568"},{n:"Qualify",v:"$5.6M",c:138,col:"#667eea"},{n:"Propose",v:"$3.1M",c:72,col:"#764ba2"},{n:"Negotiate",v:"$1.8M",c:31,col:"#ed8936"},{n:"Close",v:"$0.9M",c:14,col:"#48bb78"}],wl:[38,27,19,9,7],quota:[112,97,88,104,79,121],reps:[{name:"Sarah Chen",reg:"West",rev:"$612K",deals:22,q:121,st:"won"},{name:"Marcus Johnson",reg:"East",rev:"$588K",deals:19,q:112,st:"won"},{name:"Priya Patel",reg:"North",rev:"$541K",deals:17,q:104,st:"track"},{name:"David Kim",reg:"South",rev:"$498K",deals:16,q:97,st:"track"},{name:"Rachel Torres",reg:"North",rev:"$432K",deals:14,q:88,st:"track"},{name:"Tom Walsh",reg:"South",rev:"$361K",deals:11,q:79,st:"risk"}]},
+  q3:{revenue:"$4.07M",deals:"127",winrate:"35.1%",dealSize:"$34.5K",revDelta:"+11.2%",revUp:true,dealsDelta:"+8.1%",dealsUp:true,wrDelta:"+1.9pp",wrUp:true,dsDelta:"+1.1%",dsUp:true,months:[260,310,350,420,390,440,510,490,580,620,660,740],targets:[300,330,370,400,430,470,500,540,570,610,650,700],seg:[48,34,18],pipeline:[{n:"Prospect",v:"$6.8M",c:188,col:"#4a5568"},{n:"Qualify",v:"$4.4M",c:112,col:"#667eea"},{n:"Propose",v:"$2.6M",c:58,col:"#764ba2"},{n:"Negotiate",v:"$1.4M",c:24,col:"#ed8936"},{n:"Close",v:"$0.7M",c:11,col:"#48bb78"}],wl:[35,29,22,8,6],quota:[104,88,80,96,72,110],reps:[{name:"Marcus Johnson",reg:"East",rev:"$561K",deals:18,q:110,st:"won"},{name:"Sarah Chen",reg:"West",rev:"$542K",deals:17,q:104,st:"won"},{name:"Priya Patel",reg:"North",rev:"$498K",deals:15,q:96,st:"track"},{name:"David Kim",reg:"South",rev:"$441K",deals:14,q:88,st:"track"},{name:"Rachel Torres",reg:"North",rev:"$381K",deals:12,q:80,st:"track"},{name:"Tom Walsh",reg:"South",rev:"$310K",deals:9,q:72,st:"risk"}]},
+  q2:{revenue:"$3.66M",deals:"112",winrate:"33.2%",dealSize:"$32.7K",revDelta:"+9.8%",revUp:true,dealsDelta:"+5.7%",dealsUp:true,wrDelta:"-0.4pp",wrUp:false,dsDelta:"+3.2%",dsUp:true,months:[210,270,310,360,340,380,420,400,480,520,570,680],targets:[260,290,330,360,390,420,450,480,520,560,600,660],seg:[45,36,19],pipeline:[{n:"Prospect",v:"$5.9M",c:161,col:"#4a5568"},{n:"Qualify",v:"$3.8M",c:94,col:"#667eea"},{n:"Propose",v:"$2.1M",c:48,col:"#764ba2"},{n:"Negotiate",v:"$1.1M",c:19,col:"#ed8936"},{n:"Close",v:"$0.5M",c:8,col:"#48bb78"}],wl:[33,30,24,7,6],quota:[96,82,75,88,67,102],reps:[{name:"Sarah Chen",reg:"West",rev:"$521K",deals:16,q:102,st:"won"},{name:"Marcus Johnson",reg:"East",rev:"$498K",deals:15,q:96,st:"track"},{name:"Priya Patel",reg:"North",rev:"$442K",deals:13,q:88,st:"track"},{name:"David Kim",reg:"South",rev:"$401K",deals:12,q:82,st:"track"},{name:"Rachel Torres",reg:"North",rev:"$331K",deals:10,q:75,st:"risk"},{name:"Tom Walsh",reg:"South",rev:"$261K",deals:8,q:67,st:"risk"}]},
+  q1:{revenue:"$3.34M",deals:"98",winrate:"31.4%",dealSize:"$34.1K",revDelta:"+7.2%",revUp:true,dealsDelta:"+4.3%",dealsUp:true,wrDelta:"+0.8pp",wrUp:true,dsDelta:"+1.8%",dsUp:true,months:[180,230,270,310,290,340,380,360,430,470,510,620],targets:[230,260,300,330,360,390,420,450,490,530,570,630],seg:[44,37,19],pipeline:[{n:"Prospect",v:"$5.1M",c:140,col:"#4a5568"},{n:"Qualify",v:"$3.2M",c:81,col:"#667eea"},{n:"Propose",v:"$1.7M",c:39,col:"#764ba2"},{n:"Negotiate",v:"$0.9M",c:14,col:"#ed8936"},{n:"Close",v:"$0.4M",c:6,col:"#48bb78"}],wl:[31,31,25,7,6],quota:[88,76,69,80,61,94],reps:[{name:"Sarah Chen",reg:"West",rev:"$481K",deals:14,q:94,st:"track"},{name:"Marcus Johnson",reg:"East",rev:"$451K",deals:13,q:88,st:"track"},{name:"Priya Patel",reg:"North",rev:"$401K",deals:11,q:80,st:"track"},{name:"David Kim",reg:"South",rev:"$361K",deals:10,q:76,st:"track"},{name:"Rachel Torres",reg:"North",rev:"$292K",deals:8,q:69,st:"risk"},{name:"Tom Walsh",reg:"South",rev:"$221K",deals:6,q:61,st:"risk"}]},
+  fy:{revenue:"$15.89M",deals:"480",winrate:"34.5%",dealSize:"$33.1K",revDelta:"+14.9%",revUp:true,dealsDelta:"+10.4%",dealsUp:true,wrDelta:"+1.9pp",wrUp:true,dsDelta:"+0.6%",dsUp:true,months:[810,880,940,1010,1090,1180,1260,1340,1430,1520,1620,1800],targets:[850,920,1000,1080,1140,1220,1300,1380,1460,1560,1660,1800],seg:[50,32,18],pipeline:[{n:"Prospect",v:"$26M",c:703,col:"#4a5568"},{n:"Qualify",v:"$17.2M",c:425,col:"#667eea"},{n:"Propose",v:"$9.5M",c:217,col:"#764ba2"},{n:"Negotiate",v:"$5.2M",c:88,col:"#ed8936"},{n:"Close",v:"$2.5M",c:39,col:"#48bb78"}],wl:[35,28,21,10,6],quota:[105,91,83,97,75,114],reps:[{name:"Sarah Chen",reg:"West",rev:"$2.22M",deals:67,q:114,st:"won"},{name:"Marcus Johnson",reg:"East",rev:"$2.10M",deals:65,q:105,st:"won"},{name:"Priya Patel",reg:"North",rev:"$1.88M",deals:55,q:97,st:"track"},{name:"David Kim",reg:"South",rev:"$1.70M",deals:52,q:91,st:"track"},{name:"Rachel Torres",reg:"North",rev:"$1.44M",deals:44,q:83,st:"track"},{name:"Tom Walsh",reg:"South",rev:"$1.15M",deals:34,q:75,st:"risk"}]}
+};
+const MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let charts={};
+function gc(){return{plugins:{legend:{labels:{color:"#a0aec0",font:{size:12}}}},scales:{x:{ticks:{color:"#718096"},grid:{color:"#2d3748"}},y:{ticks:{color:"#718096"},grid:{color:"#2d3748"}}}};}
+function kill(){Object.values(charts).forEach(c=>c.destroy());charts={};}
+function render(p){
+  kill();const d=DATA[p];
+  const set=(id,val)=>document.getElementById(id).textContent=val;
+  const cls=(id,val,up)=>{const el=document.getElementById(id);el.textContent=val+" vs prev period";el.className="kpi-delta "+(up?"up":"down");};
+  set("kpi-revenue",d.revenue);set("kpi-deals",d.deals);set("kpi-winrate",d.winrate);set("kpi-dealsize",d.dealSize);
+  cls("kpi-rdelta",d.revDelta,d.revUp);cls("kpi-ddelta",d.dealsDelta,d.dealsUp);cls("kpi-wdelta",d.wrDelta,d.wrUp);cls("kpi-sdelta",d.dsDelta,d.dsUp);
+  charts.rev=new Chart(document.getElementById("revenueChart"),{type:"line",data:{labels:MO,datasets:[{label:"Actual",data:d.months,borderColor:"#667eea",backgroundColor:"rgba(102,126,234,0.12)",tension:0.4,fill:true,pointRadius:3},{label:"Target",data:d.targets,borderColor:"#ed8936",borderDash:[5,4],tension:0.4,fill:false,pointRadius:0}]},options:{responsive:true,...gc()}});
+  charts.seg=new Chart(document.getElementById("segmentChart"),{type:"doughnut",data:{labels:["Enterprise","Mid-Market","SMB"],datasets:[{data:d.seg,backgroundColor:["#667eea","#48bb78","#ed8936"],borderWidth:0}]},options:{responsive:true,cutout:"68%",plugins:{legend:{position:"bottom",labels:{color:"#a0aec0",padding:16}}}}});
+  document.getElementById("pipelineStages").innerHTML=d.pipeline.map(s=>`<div class="stage"><div class="stage-bar" style="background:${s.col}"></div><div class="stage-val">${s.v}</div><div class="stage-label">${s.n}</div><div class="stage-count">${s.c} deals</div></div>`).join("");
+  charts.wl=new Chart(document.getElementById("winlossChart"),{type:"bar",data:{labels:["Price","Competition","No Decision","Timing","Other"],datasets:[{data:d.wl,backgroundColor:["#48bb78","#fc8181","#ed8936","#4299e1","#718096"],borderRadius:4}]},options:{indexAxis:"y",responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#718096",callback:v=>v+"%"},grid:{color:"#2d3748"}},y:{ticks:{color:"#718096"},grid:{display:false}}}}});
+  charts.q=new Chart(document.getElementById("quotaChart"),{type:"bar",data:{labels:["West","North","East","South","Ctrl","Natl"],datasets:[{data:d.quota,backgroundColor:d.quota.map(v=>v>=100?"#48bb78":v>=80?"#667eea":"#fc8181"),borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#718096"},grid:{display:false}},y:{ticks:{color:"#718096",callback:v=>v+"%"},grid:{color:"#2d3748"}}}}});
+  document.getElementById("repTableBody").innerHTML=d.reps.map((r,i)=>`<tr><td style="color:#718096">${i+1}</td><td class="rep-name">${r.name}</td><td>${r.reg}</td><td style="font-weight:600;color:#e2e8f0">${r.rev}</td><td>${r.deals}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:${Math.min(r.q,120)/1.2}%;background:${r.q>=100?"#48bb78":r.q>=80?"#667eea":"#fc8181"}"></div></div><span style="font-size:12px;font-weight:600;color:${r.q>=100?"#48bb78":r.q>=80?"#63b3ed":"#fc8181"}">${r.q}%</span></div></td><td><span class="tag ${r.st}">${r.st==="won"?"Exceeded":r.st==="track"?"On Track":"At Risk"}</span></td></tr>`).join("");
+}
+function applyFilters(){render(document.getElementById("periodFilter").value);}
+function resetFilters(){document.getElementById("periodFilter").value="q4";document.getElementById("regionFilter").value="all";document.getElementById("segmentFilter").value="all";render("q4");}
+render("q4");
+</script>
+</body>
+</html>
