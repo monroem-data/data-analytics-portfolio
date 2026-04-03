@@ -133,6 +133,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   <div class="tab" onclick="switchTab('adstock',this)">📉 Adstock & Saturation</div>
   <div class="tab" onclick="switchTab('search',this)">🔍 Brand vs NonBrand</div>
   <div class="tab" onclick="switchTab('scenario',this)">🎯 Budget Optimizer</div>
+  <div class="tab" onclick="switchTab('transparency',this)">🔬 Model Transparency</div>
 </div>
 
 <main>
@@ -312,6 +313,112 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <canvas id="gainChart"></canvas>
     </div>
   </div>
+</div>
+
+
+<!-- ══════════════════════════════ TAB 6: MODEL TRANSPARENCY -->
+<div id="tab-transparency" class="tab-content">
+
+  <!-- Explainer banner -->
+  <div style="background:linear-gradient(135deg,#1e2010,#2d2a10);border:1px solid #4a4010;border-radius:12px;padding:20px 24px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#f6ad55;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">① Priors</div>
+      <div style="font-size:13px;color:#e2e8f0;font-weight:600;margin-bottom:4px;">What the model believed before seeing data</div>
+      <div style="font-size:12px;color:#a0aec0;line-height:1.6;">Domain knowledge encoded as probability distributions — adstock decay rates, seasonal patterns, and saturation shapes. Weakly informative priors allow data to dominate.</div>
+    </div>
+    <div style="border-left:1px solid #4a4010;padding-left:24px;">
+      <div style="font-size:11px;font-weight:700;color:#b794f4;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">② Posteriors</div>
+      <div style="font-size:13px;color:#e2e8f0;font-weight:600;margin-bottom:4px;">How data updated those beliefs</div>
+      <div style="font-size:12px;color:#a0aec0;line-height:1.6;">After observing 52 weeks of revenue and spend data, the model updates each prior. Narrow posteriors = high confidence. Wide posteriors = the data was ambiguous on that parameter.</div>
+    </div>
+    <div style="border-left:1px solid #4a4010;padding-left:24px;">
+      <div style="font-size:11px;font-weight:700;color:#48bb78;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">③ Credible Intervals</div>
+      <div style="font-size:13px;color:#e2e8f0;font-weight:600;margin-bottom:4px;">The range we're confident the truth falls within</div>
+      <div style="font-size:12px;color:#a0aec0;line-height:1.6;">A 90% credible interval means we're 90% confident the true value lies in that range — directly interpretable, unlike frequentist confidence intervals.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: PRIORS -->
+  <div style="font-size:15px;font-weight:700;color:#f6ad55;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><span>①</span> Prior Distributions — What We Assumed Before Data</div>
+  <div style="font-size:12px;color:#718096;margin-bottom:16px;">Encoded domain knowledge: TV decays slowly, SEM decays fast, all channels follow diminishing returns. These are weakly informative — wide enough to let the data speak.</div>
+
+  <div class="charts-row-3" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Adstock Decay — Prior Beliefs</div><div class="card-subtitle">Alpha parameter priors per channel · Beta(a,b) distributions</div></div><span class="card-badge">Prior</span></div>
+      <canvas id="priorAdstockChart"></canvas>
+      <div class="adstock-note" style="margin-top:12px;">TV prior centered near 0.6 (slow decay). SEM priors centered near 0.1–0.2 (fast decay). Wide bands = we're not forcing the model — letting data confirm or correct our assumption.</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Seasonality — Prior Shape</div><div class="card-subtitle">Weekly seasonal component prior · Fourier terms assumed</div></div><span class="card-badge">Prior</span></div>
+      <canvas id="priorSeasonChart"></canvas>
+      <div class="adstock-note" style="margin-top:12px;">Prior assumes moderate seasonality with Q4 peak — based on industry norms. The model is free to dampen or amplify this based on observed revenue patterns.</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Saturation — Prior Response Curves</div><div class="card-subtitle">Hill function shape priors · half-saturation and slope</div></div><span class="card-badge">Prior</span></div>
+      <canvas id="priorSatChart"></canvas>
+      <div class="adstock-note" style="margin-top:12px;">Prior assumes all channels follow a Hill function with moderate curvature. The half-saturation point (k) is where 50% of max response is reached — prior is intentionally broad.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: POSTERIORS -->
+  <div style="font-size:15px;font-weight:700;color:#b794f4;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><span>②</span> Posterior Distributions — What the Data Revealed</div>
+  <div style="font-size:12px;color:#718096;margin-bottom:16px;">After observing the data, each prior narrows into a posterior. The shift from prior to posterior shows how much the model learned — and where it remained uncertain.</div>
+
+  <div class="charts-row-2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Prior → Posterior: Adstock Decay (Alpha)</div><div class="card-subtitle">How data updated our decay rate beliefs per channel</div></div><span class="card-badge">Update</span></div>
+      <canvas id="postAdstockChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Prior → Posterior: Seasonality Component</div><div class="card-subtitle">Model-learned seasonal pattern vs prior assumption</div></div><span class="card-badge">Update</span></div>
+      <canvas id="postSeasonChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-header"><div><div class="card-title">Prior → Posterior Summary Table</div><div class="card-subtitle">Key parameter shifts — how much did data move each belief? Large shifts = the prior was wrong. Small shifts = prior was confirmed.</div></div><span class="card-badge">All Parameters</span></div>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr id="transTableHead"></tr></thead>
+      <tbody id="transTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 3: CREDIBLE INTERVALS -->
+  <div style="font-size:15px;font-weight:700;color:#48bb78;margin-bottom:4px;display:flex;align-items:center;gap:8px;"><span>③</span> Credible Intervals — Communicating Confidence</div>
+  <div style="font-size:12px;color:#718096;margin-bottom:16px;">Unlike point estimates, credible intervals show the full range of plausible values — critical for making investment decisions with appropriate uncertainty.</div>
+
+  <div class="charts-row-2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Revenue Attribution — 90% Credible Intervals</div><div class="card-subtitle">Point estimate (dot) with 50% and 90% credible bands — wider = more uncertainty</div></div><span class="card-badge">90% CI</span></div>
+      <canvas id="ciRevenueChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Why Credible Intervals Beat Point Estimates</div><div class="card-subtitle">Decision-making under uncertainty — does the low end still clear our hurdle rate?</div></div><span class="card-badge">Decision Framework</span></div>
+      <canvas id="ciDecisionChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Callout -->
+  <div style="background:linear-gradient(135deg,#0f2218,#0f1a28);border:1px solid #2d3748;border-radius:12px;padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#48bb78;margin-bottom:10px;">🧠 Bayesian vs Frequentist — The Practical Difference</div>
+      <div style="font-size:12px;color:#a0aec0;line-height:1.8;">
+        A frequentist MMM gives a single coefficient: <span style="color:#e2e8f0;font-weight:600;">"TV drove $3.12M."</span><br>
+        A Bayesian MMM gives a full distribution: <span style="color:#f6ad55;font-weight:600;">"TV drove $2.71M–$3.54M with 90% confidence."</span><br><br>
+        That uncertainty is <em>actionable</em>. If the <strong style="color:#48bb78">lower bound</strong> of TV's credible interval still exceeds our hurdle rate of $2.0M, we invest with confidence — even in a pessimistic scenario. If the lower bound <strong style="color:#fc8181">falls below</strong> the hurdle rate, we need more data before committing budget.
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#b794f4;margin-bottom:10px;">📋 How to Read This Model's Outputs</div>
+      <div style="font-size:12px;color:#a0aec0;line-height:1.8;">
+        <span style="color:#f6ad55;font-weight:600;">Narrow posterior + small CI</span> → Model is confident. Data clearly identified this channel's effect.<br><br>
+        <span style="color:#63b3ed;font-weight:600;">Wide posterior + large CI</span> → Model is uncertain. Could mean collinear channels, sparse spend history, or genuine noise.<br><br>
+        <span style="color:#48bb78;font-weight:600;">Prior ≈ Posterior</span> → Data confirmed what we assumed. Trust the prior.<br><br>
+        <span style="color:#fc8181;font-weight:600;">Prior ≠ Posterior</span> → Data overrode our assumption. The model learned something new.
+      </div>
+    </div>
+  </div>
+
 </div>
 
 </main>
@@ -694,8 +801,190 @@ function applyOptimal(){
   updateScenarioUI();
 }
 
+
+function renderTransparency(){
+  const MO_=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const CHCOLS={'TV':'#f6ad55','Digital Display':'#b794f4','Paid Social':'#f093fb','Brand SEM':'#48bb78','NonBrand SEM':'#63b3ed'};
+
+  // ── PRIOR: Adstock decay alpha distributions (5 channels, normal approx)
+  // Each channel: {mean, sd} of their Beta prior, rendered as normal density bins
+  const PRIOR_ALPHA=[
+    {name:'TV',            mean:0.60, sd:0.12},
+    {name:'Digital Display',mean:0.30, sd:0.10},
+    {name:'Paid Social',   mean:0.42, sd:0.11},
+    {name:'Brand SEM',     mean:0.18, sd:0.08},
+    {name:'NonBrand SEM',  mean:0.12, sd:0.07},
+  ];
+  const alphaX=Array.from({length:20},(_,i)=>parseFloat((i*0.05).toFixed(2)));
+  function normalDensity(x,mu,sd){return Math.exp(-0.5*((x-mu)/sd)**2)/(sd*Math.sqrt(2*Math.PI));}
+
+  charts.priorAdstock=new Chart(document.getElementById('priorAdstockChart'),{
+    type:'line',
+    data:{labels:alphaX.map(v=>v.toFixed(2)),
+      datasets:PRIOR_ALPHA.map(p=>({
+        label:p.name,
+        data:alphaX.map(x=>normalDensity(x,p.mean,p.sd)),
+        borderColor:CHCOLS[p.name],backgroundColor:CHCOLS[p.name]+'18',
+        tension:0.4,fill:true,pointRadius:0,borderWidth:2
+      }))},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#a0aec0',font:{size:10}}}},
+      scales:{x:{title:{display:true,text:'Alpha (decay rate)',color:'#718096'},ticks:{color:'#718096',maxTicksLimit:8},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'Density',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ── PRIOR: Seasonality — assumed Fourier-based seasonal prior
+  const priorSeason=[0.98,0.96,0.97,1.00,1.02,1.04,1.06,1.05,1.04,1.08,1.14,1.20];
+  const priorSeasonLo=priorSeason.map(v=>v-0.08);
+  const priorSeasonHi=priorSeason.map(v=>v+0.08);
+  charts.priorSeason=new Chart(document.getElementById('priorSeasonChart'),{
+    type:'line',
+    data:{labels:MO_,datasets:[
+      {label:'Prior Mean',data:priorSeason,borderColor:'#f6ad55',backgroundColor:'rgba(246,173,85,0.1)',tension:0.4,fill:false,pointRadius:3,borderWidth:2},
+      {label:'Prior 90% Band',data:priorSeasonHi,borderColor:'#f6ad5544',backgroundColor:'rgba(246,173,85,0.08)',tension:0.4,fill:'+1',pointRadius:0,borderDash:[3,3]},
+      {label:'_lo',data:priorSeasonLo,borderColor:'#f6ad5544',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:0,borderDash:[3,3]},
+    ]},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#a0aec0',font:{size:11},filter:l=>!l.text.startsWith('_')}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'Seasonal Multiplier',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ── PRIOR: Saturation (Hill function — prior curves, broader/flatter than posterior)
+  const satX=Array.from({length:11},(_,i)=>i*60);
+  function hill(x,k,n){return Math.pow(x,n)/(Math.pow(k,n)+Math.pow(x,n));}
+  const PRIOR_SAT_PARAMS=[
+    {name:'TV',            k:220,n:1.8},{name:'Digital Display',k:140,n:1.6},
+    {name:'Paid Social',   k:160,n:1.7},{name:'Brand SEM',      k:100,n:2.0},
+    {name:'NonBrand SEM',  k:130,n:1.8},
+  ];
+  charts.priorSat=new Chart(document.getElementById('priorSatChart'),{
+    type:'line',
+    data:{labels:satX.map(v=>'$'+v+'K'),
+      datasets:PRIOR_SAT_PARAMS.map(p=>({
+        label:p.name,data:satX.map(x=>x===0?0:hill(x,p.k,p.n)*100),
+        borderColor:CHCOLS[p.name],backgroundColor:'transparent',
+        tension:0.4,pointRadius:0,borderWidth:2,borderDash:[4,3]
+      }))},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#a0aec0',font:{size:10}}}},
+      scales:{x:{ticks:{color:'#718096',maxTicksLimit:7},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'% of Max Response (Prior)',color:'#718096'},ticks:{color:'#718096',callback:v=>v+'%'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ── POSTERIOR: Adstock — prior vs posterior overlays
+  const POST_ALPHA=[
+    {name:'TV',            priorMean:0.60,postMean:0.62,priorSd:0.12,postSd:0.05},
+    {name:'Digital Display',priorMean:0.30,postMean:0.30,priorSd:0.10,postSd:0.05},
+    {name:'Paid Social',   priorMean:0.42,postMean:0.42,priorSd:0.11,postSd:0.05},
+    {name:'Brand SEM',     priorMean:0.18,postMean:0.18,priorSd:0.08,postSd:0.04},
+    {name:'NonBrand SEM',  priorMean:0.12,postMean:0.12,priorSd:0.07,postSd:0.03},
+  ];
+  // Show TV as featured example — prior (wide) vs posterior (narrow)
+  const tvPrior=POST_ALPHA[0];
+  const postAlphaDatasets=[];
+  POST_ALPHA.forEach(p=>{
+    postAlphaDatasets.push({label:p.name+' Prior',data:alphaX.map(x=>normalDensity(x,p.priorMean,p.priorSd)),borderColor:CHCOLS[p.name]+'55',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:0,borderWidth:1.5,borderDash:[4,3]});
+    postAlphaDatasets.push({label:p.name+' Posterior',data:alphaX.map(x=>normalDensity(x,p.postMean,p.postSd)),borderColor:CHCOLS[p.name],backgroundColor:CHCOLS[p.name]+'15',tension:0.4,fill:true,pointRadius:0,borderWidth:2});
+  });
+  charts.postAdstock=new Chart(document.getElementById('postAdstockChart'),{
+    type:'line',
+    data:{labels:alphaX.map(v=>v.toFixed(2)),datasets:postAlphaDatasets},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#a0aec0',font:{size:10},filter:l=>l.text.includes('Posterior')}}},
+      scales:{x:{title:{display:true,text:'Alpha — dashed=Prior · solid=Posterior',color:'#718096'},ticks:{color:'#718096',maxTicksLimit:8},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'Density',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ── POSTERIOR: Seasonality — prior vs model-learned
+  const postSeason=[0.96,0.94,0.97,1.01,1.03,1.05,1.08,1.06,1.05,1.10,1.18,1.26];
+  const postSeasonLo=postSeason.map(v=>v-0.03);
+  const postSeasonHi=postSeason.map(v=>v+0.03);
+  charts.postSeason=new Chart(document.getElementById('postSeasonChart'),{
+    type:'line',
+    data:{labels:MO_,datasets:[
+      {label:'Prior Mean',data:priorSeason,borderColor:'#718096',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:0,borderWidth:1.5,borderDash:[5,4]},
+      {label:'Posterior Mean',data:postSeason,borderColor:'#b794f4',backgroundColor:'rgba(183,148,244,0.1)',tension:0.4,fill:false,pointRadius:3,borderWidth:2.5},
+      {label:'Posterior 90% CI Hi',data:postSeasonHi,borderColor:'#b794f444',backgroundColor:'rgba(183,148,244,0.08)',tension:0.4,fill:'+1',pointRadius:0,borderDash:[2,2]},
+      {label:'_ci_lo',data:postSeasonLo,borderColor:'#b794f444',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:0,borderDash:[2,2]},
+    ]},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#a0aec0',font:{size:11},filter:l=>!l.text.startsWith('_')}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'Seasonal Multiplier',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ── PARAMETER TABLE
+  const TABLE_DATA=[
+    {param:'TV Adstock Alpha',prior:'Beta(6,4) → mean 0.60',posterior:'0.62 [0.52–0.70]',shift:'Small',learned:'Data confirmed slow TV decay',shiftCls:'med'},
+    {param:'Digital Alpha',prior:'Beta(3,7) → mean 0.30',posterior:'0.30 [0.22–0.38]',shift:'Minimal',learned:'Prior well-specified, fast decay confirmed',shiftCls:'high'},
+    {param:'Social Alpha',prior:'Beta(4,6) → mean 0.42',posterior:'0.42 [0.34–0.50]',shift:'Minimal',learned:'Prior confirmed — moderate carry-over',shiftCls:'high'},
+    {param:'Brand SEM Alpha',prior:'Beta(2,8) → mean 0.18',posterior:'0.18 [0.12–0.24]',shift:'Minimal',learned:'Near-instant decay confirmed by data',shiftCls:'high'},
+    {param:'NonBrand Alpha',prior:'Beta(1,8) → mean 0.12',posterior:'0.12 [0.07–0.17]',shift:'Minimal',learned:'Fastest decay — demand capture only',shiftCls:'high'},
+    {param:'TV Saturation k',prior:'HalfNormal(220)',posterior:'198 [168–228]',shift:'Moderate',learned:'Saturation occurs at lower spend than assumed',shiftCls:'med'},
+    {param:'Seasonality amplitude',prior:'Normal(0, 0.1)',posterior:'0.14 [0.11–0.17]',shift:'Large',learned:'Q4 seasonality stronger than prior assumed',shiftCls:'low'},
+    {param:'Baseline intercept',prior:'Normal(500, 100)',posterior:'568 [540–596]',shift:'Moderate',learned:'Organic baseline higher than expected',shiftCls:'med'},
+  ];
+  const thS='font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;padding:10px 12px;text-align:left;border-bottom:1px solid #2d3748;';
+  const tdS='font-size:12px;color:#cbd5e0;padding:10px 12px;border-bottom:1px solid #1e2535;';
+  document.getElementById('transTableHead').innerHTML=
+    ['Parameter','Prior Specification','Posterior [90% CI]','Shift','What the Model Learned']
+    .map(h=>`<th style="${thS}">${h}</th>`).join('');
+  document.getElementById('transTableBody').innerHTML=TABLE_DATA.map(r=>`<tr>
+    <td style="${tdS}font-weight:600;color:#e2e8f0;">${r.param}</td>
+    <td style="${tdS}color:#a0aec0;font-family:monospace;font-size:11px;">${r.prior}</td>
+    <td style="${tdS}color:#b794f4;font-weight:600;font-family:monospace;font-size:11px;">${r.posterior}</td>
+    <td style="${tdS}"><span class="tag ${r.shiftCls}">${r.shift}</span></td>
+    <td style="${tdS}color:#a0aec0;">${r.learned}</td>
+  </tr>`).join('');
+
+  // ── CI: Revenue attribution forest plot — 50% and 90% bands
+  const CI_DATA=[
+    {name:'TV',          mean:3.12, ci50lo:2.92, ci50hi:3.32, ci90lo:2.71, ci90hi:3.54},
+    {name:'Brand SEM',   mean:1.76, ci50lo:1.66, ci50hi:1.86, ci90lo:1.54, ci90hi:1.98},
+    {name:'Digital',     mean:1.48, ci50lo:1.33, ci50hi:1.63, ci90lo:1.18, ci90hi:1.78},
+    {name:'Paid Social', mean:1.39, ci50lo:1.25, ci50hi:1.53, ci90lo:1.11, ci90hi:1.68},
+    {name:'NonBrand SEM',mean:1.08, ci50lo:0.98, ci50hi:1.18, ci90lo:0.88, ci90hi:1.28},
+    {name:'Baseline',    mean:6.82, ci50lo:6.61, ci50hi:7.03, ci90lo:6.40, ci90hi:7.24},
+  ];
+  charts.ciRevenue=new Chart(document.getElementById('ciRevenueChart'),{
+    type:'bar',
+    data:{labels:CI_DATA.map(d=>d.name),
+      datasets:[
+        {label:'90% CI Range',data:CI_DATA.map(d=>[d.ci90lo,d.ci90hi]),backgroundColor:CI_DATA.map(d=>(CHCOLS[d.name]||'#4a5568')+'33'),borderRadius:4,borderSkipped:false},
+        {label:'50% CI Range',data:CI_DATA.map(d=>[d.ci50lo,d.ci50hi]),backgroundColor:CI_DATA.map(d=>(CHCOLS[d.name]||'#4a5568')+'88'),borderRadius:2,borderSkipped:false},
+        {label:'Point Estimate',data:CI_DATA.map(d=>d.mean),backgroundColor:CI_DATA.map(d=>CHCOLS[d.name]||'#4a5568'),borderRadius:2,barThickness:6},
+      ]},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},
+              y:{title:{display:true,text:'Attributed Revenue ($M)',color:'#718096'},ticks:{color:'#718096',callback:v=>'$'+v+'M'},grid:{color:'#2d3748'}}}}
+  });
+
+  // ── CI: Decision framework — hurdle rate vs CI
+  const HURDLE=1.5; // $1.5M hurdle rate
+  const decisionData=CI_DATA.filter(d=>d.name!=='Baseline');
+  charts.ciDecision=new Chart(document.getElementById('ciDecisionChart'),{
+    type:'bar',
+    data:{labels:decisionData.map(d=>d.name),
+      datasets:[
+        {label:'90% CI Range',data:decisionData.map(d=>[d.ci90lo,d.ci90hi]),backgroundColor:decisionData.map(d=>d.ci90lo>=HURDLE?'rgba(72,187,120,0.25)':d.ci90hi>=HURDLE?'rgba(246,173,85,0.25)':'rgba(252,129,129,0.25)'),borderRadius:4,borderSkipped:false},
+        {label:'Point Estimate',data:decisionData.map(d=>d.mean),backgroundColor:decisionData.map(d=>d.ci90lo>=HURDLE?'#48bb78':d.ci90hi>=HURDLE?'#f6ad55':'#fc8181'),borderRadius:2,barThickness:8},
+      ]},
+    options:{responsive:true,
+      plugins:{
+        legend:{labels:{color:'#a0aec0',font:{size:11}}},
+        annotation:{annotations:{hurdle:{type:'line',yMin:HURDLE,yMax:HURDLE,borderColor:'#fc8181',borderWidth:2,borderDash:[6,3],
+          label:{content:'Hurdle Rate $1.5M',display:true,color:'#fc8181',font:{size:10},position:'end'}}}}
+      },
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},
+              y:{title:{display:true,text:'Revenue ($M) · green=clear hurdle · amber=uncertain · red=below',color:'#718096'},ticks:{color:'#718096',callback:v=>'$'+v+'M'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+
 // ─── TAB SWITCHING ──────────────────────────────────────────────────
-const TAB_RENDERERS={decomp:renderDecomp,posterior:renderPosterior,adstock:renderAdstock,search:renderSearch,scenario:renderScenario};
+const TAB_RENDERERS={decomp:renderDecomp,posterior:renderPosterior,adstock:renderAdstock,search:renderSearch,scenario:renderScenario,transparency:renderTransparency};
 const renderedTabs=new Set();
 
 function switchTab(tab,el){
