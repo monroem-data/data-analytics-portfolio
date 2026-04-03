@@ -18,17 +18,19 @@ header{background:linear-gradient(135deg,#1a1f2e,#16213e);border-bottom:1px soli
 main{padding:48px 32px;max-width:1200px;}
 .section-title{font-size:22px;font-weight:700;color:#f7fafc;margin-bottom:8px;}
 .section-sub{font-size:14px;color:#718096;margin-bottom:32px;}
-.dashboards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:56px;}
+.dashboards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:56px;}
 .dash-card{background:#1a1f2e;border:1px solid #2d3748;border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;cursor:pointer;}
 .dash-card:hover{transform:translateY(-4px);border-color:#4a5568;}
 .dash-preview{height:160px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;}
 .dash-preview.sales{background:linear-gradient(135deg,#1a1a3e,#2d1f5e);}
 .dash-preview.marketing{background:linear-gradient(135deg,#2d1a3e,#4a1a3e);}
 .dash-preview.finance{background:linear-gradient(135deg,#1a2d1a,#1a3d2a);}
+.dash-preview.mmm{background:linear-gradient(135deg,#2d1a0e,#3d2810);}
 .preview-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:600;padding:3px 10px;border-radius:10px;}
 .preview-badge.sales{background:rgba(102,126,234,0.2);color:#667eea;}
 .preview-badge.marketing{background:rgba(183,148,244,0.2);color:#b794f4;}
 .preview-badge.finance{background:rgba(72,187,120,0.2);color:#48bb78;}
+.preview-badge.mmm{background:rgba(246,173,85,0.2);color:#f6ad55;}
 .mini-bars{position:absolute;bottom:16px;left:16px;right:16px;display:flex;gap:4px;align-items:flex-end;height:48px;}
 .mini-bar{flex:1;border-radius:3px 3px 0 0;opacity:.7;}
 .dash-body{padding:20px;}
@@ -39,6 +41,7 @@ main{padding:48px 32px;max-width:1200px;}
 .dash-link{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;padding:9px 20px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;transition:opacity .2s;}
 .dash-link.marketing{background:linear-gradient(90deg,#b794f4,#f5576c);}
 .dash-link.finance{background:linear-gradient(90deg,#43e97b,#38f9d7);color:#1a2d1a;}
+.dash-link.mmm{background:linear-gradient(90deg,#f6ad55,#ed8936);color:#1a1a1a;}
 .dash-link:hover{opacity:.85;}
 .about{background:#1a1f2e;border:1px solid #2d3748;border-radius:16px;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:32px;}
 .about h3{font-size:16px;font-weight:700;color:#f7fafc;margin-bottom:16px;}
@@ -65,6 +68,8 @@ footer{border-top:1px solid #2d3748;padding:24px 32px;display:flex;justify-conte
       <span class="skill-tag">🗄️ SQL</span>
       <span class="skill-tag">📉 Data Modeling</span>
       <span class="skill-tag">🎯 KPI Strategy</span>
+      <span class="skill-tag">🧠 Bayesian MMM</span>
+      <span class="skill-tag">📉 Adstock Modeling</span>
       <span class="skill-tag">👥 Team Leadership</span>
     </div>
   </div>
@@ -137,6 +142,29 @@ footer{border-top:1px solid #2d3748;padding:24px 32px;display:flex;justify-conte
         <div class="dash-desc">P&L summary, budget vs actuals by department, cash flow trends, EBITDA tracking, and cost breakdown.</div>
         <div class="dash-tags"><span class="dash-tag">P&L</span><span class="dash-tag">Budget vs Actual</span><span class="dash-tag">Cash Flow</span><span class="dash-tag">EBITDA</span></div>
         <a href="finance-dashboard.html" class="dash-link finance">View Dashboard →</a>
+      </div>
+    </div>
+
+    <div class="dash-card" onclick="location.href='mmm-dashboard.html'">
+      <div class="dash-preview mmm">
+        <span>🧠</span>
+        <span class="preview-badge mmm">MMM</span>
+        <div class="mini-bars">
+          <div class="mini-bar" style="height:45%;background:#f6ad55"></div>
+          <div class="mini-bar" style="height:60%;background:#f6ad55"></div>
+          <div class="mini-bar" style="height:52%;background:#f6ad55"></div>
+          <div class="mini-bar" style="height:75%;background:#f6ad55"></div>
+          <div class="mini-bar" style="height:65%;background:#f6ad55"></div>
+          <div class="mini-bar" style="height:88%;background:#f6ad55"></div>
+          <div class="mini-bar" style="height:78%;background:#f6ad55"></div>
+          <div class="mini-bar" style="height:100%;background:#f6ad55"></div>
+        </div>
+      </div>
+      <div class="dash-body">
+        <div class="dash-title">Bayesian Marketing Mix Model</div>
+        <div class="dash-desc">Revenue decomposition, posterior distributions, adstock decay, Brand vs NonBrand SEM analysis, and an interactive budget scenario simulator.</div>
+        <div class="dash-tags"><span class="dash-tag">PyMC · Bayesian</span><span class="dash-tag">Adstock</span><span class="dash-tag">Saturation</span><span class="dash-tag">Budget Optimizer</span></div>
+        <a href="mmm-dashboard.html" class="dash-link mmm">View Dashboard →</a>
       </div>
     </div>
   </div>

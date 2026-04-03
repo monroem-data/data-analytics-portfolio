@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bayesian MMM Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;}
+header{background:linear-gradient(135deg,#1a1f2e,#16213e);border-bottom:1px solid #2d3748;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#f6ad55,#ed8936);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo h1{font-size:18px;font-weight:700;color:#f7fafc;}
+.logo span{font-size:12px;color:#718096;display:block;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.badge{background:#2d2010;color:#f6ad55;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+.model-badge{background:#1a2535;border:1px solid #2d3748;color:#a0aec0;padding:4px 12px;border-radius:20px;font-size:11px;}
+.nav-link{color:#a0aec0;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #2d3748;border-radius:6px;}
+.nav-link:hover{color:#f6ad55;border-color:#f6ad55;}
+.tab-bar{background:#1a1f2e;border-bottom:1px solid #2d3748;padding:0 32px;display:flex;gap:0;}
+.tab{padding:14px 22px;font-size:13px;font-weight:600;color:#718096;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.tab:hover{color:#e2e8f0;}
+.tab.active{color:#f6ad55;border-bottom-color:#f6ad55;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+main{padding:28px 32px;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
+.kpi-card{background:linear-gradient(135deg,#1a1f2e,#1e2535);border:1px solid #2d3748;border-radius:12px;padding:16px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-card.orange::before{background:linear-gradient(90deg,#f6ad55,#ed8936);}
+.kpi-card.teal::before{background:linear-gradient(90deg,#4fd1c5,#38b2ac);}
+.kpi-card.purple::before{background:linear-gradient(90deg,#b794f4,#9f7aea);}
+.kpi-card.green::before{background:linear-gradient(90deg,#68d391,#48bb78);}
+.kpi-card.blue::before{background:linear-gradient(90deg,#63b3ed,#4299e1);}
+.kpi-label{font-size:10px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.kpi-value{font-size:22px;font-weight:700;color:#f7fafc;margin-bottom:4px;}
+.kpi-sub{font-size:11px;color:#718096;}
+.kpi-ci{font-size:10px;color:#a0aec0;margin-top:2px;}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+.charts-row-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.charts-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;}
+.card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:22px 24px;}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+.card-title{font-size:14px;font-weight:600;color:#e2e8f0;}
+.card-subtitle{font-size:11px;color:#718096;margin-top:3px;line-height:1.5;}
+.card-badge{font-size:11px;background:#2d3748;color:#a0aec0;padding:3px 10px;border-radius:12px;white-space:nowrap;flex-shrink:0;}
+canvas{max-height:260px;}
+
+/* Channel contribution bars */
+.contrib-list{display:flex;flex-direction:column;gap:14px;}
+.contrib-item{}
+.contrib-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.contrib-name{font-size:13px;font-weight:600;color:#e2e8f0;display:flex;align-items:center;gap:8px;}
+.contrib-dot{width:9px;height:9px;border-radius:50%;}
+.contrib-vals{font-size:12px;color:#a0aec0;}
+.contrib-track{height:10px;background:#2d3748;border-radius:5px;position:relative;}
+.contrib-fill{height:100%;border-radius:5px;position:relative;}
+.contrib-ci{position:absolute;top:50%;transform:translateY(-50%);height:4px;background:rgba(255,255,255,0.25);border-radius:2px;}
+
+/* Posterior distribution bars */
+.posterior-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.posterior-card{background:#1e2535;border:1px solid #2d3748;border-radius:10px;padding:16px;}
+.posterior-title{font-size:12px;font-weight:700;margin-bottom:4px;}
+.posterior-stats{display:flex;gap:16px;margin-bottom:10px;}
+.pstat{font-size:11px;color:#718096;}
+.pstat span{display:block;font-size:13px;font-weight:700;color:#e2e8f0;}
+.dist-bar-row{display:flex;gap:2px;align-items:flex-end;height:48px;margin-top:4px;}
+.dist-bar{flex:1;border-radius:2px 2px 0 0;transition:opacity .2s;}
+.credible-band{display:flex;justify-content:space-between;font-size:10px;color:#718096;margin-top:4px;}
+
+/* Scenario sliders */
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.slider-group{display:flex;flex-direction:column;gap:14px;}
+.slider-item{}
+.slider-label{display:flex;justify-content:space-between;font-size:12px;color:#a0aec0;margin-bottom:6px;}
+.slider-label span{color:#f6ad55;font-weight:700;}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:#2d3748;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#f6ad55;cursor:pointer;}
+.scenario-output{background:#1e2535;border:1px solid #2d3748;border-radius:10px;padding:20px;}
+.scenario-kpi{text-align:center;margin-bottom:16px;}
+.scenario-kpi-val{font-size:32px;font-weight:800;color:#f6ad55;}
+.scenario-kpi-label{font-size:12px;color:#718096;margin-top:4px;}
+.scenario-kpi-delta{font-size:13px;font-weight:700;margin-top:6px;}
+.scenario-kpi-delta.up{color:#48bb78;}
+.scenario-kpi-delta.down{color:#fc8181;}
+.scenario-bar-row{display:flex;gap:12px;align-items:center;margin-bottom:10px;}
+.scenario-bar-label{font-size:11px;color:#a0aec0;width:140px;flex-shrink:0;}
+.scenario-bar-wrap{flex:1;background:#2d3748;border-radius:4px;height:20px;display:flex;}
+.scenario-bar-cur{height:100%;border-radius:4px 0 0 4px;opacity:.5;}
+.scenario-bar-new{height:100%;border-radius:0 4px 4px 0;}
+.scenario-bar-val{font-size:11px;color:#e2e8f0;width:60px;text-align:right;flex-shrink:0;}
+
+/* Adstock */
+.adstock-note{font-size:11px;color:#718096;background:#1e2535;border-radius:8px;padding:10px 14px;margin-top:12px;line-height:1.6;}
+
+/* Brand vs NonBrand */
+.bnb-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.bnb-card{background:#1e2535;border-radius:10px;padding:18px;}
+.bnb-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.bnb-metric{display:flex;justify-content:space-between;font-size:12px;color:#a0aec0;padding:6px 0;border-bottom:1px solid #2d3748;}
+.bnb-metric:last-child{border-bottom:none;}
+.bnb-metric span{color:#e2e8f0;font-weight:600;}
+.insight-box{background:#1e2535;border-left:3px solid #f6ad55;border-radius:0 8px 8px 0;padding:14px 16px;margin-top:14px;font-size:12px;color:#a0aec0;line-height:1.7;}
+.insight-box strong{color:#f6ad55;}
+
+.tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;}
+.tag.high{background:#1a4731;color:#48bb78;}
+.tag.med{background:#1a3350;color:#63b3ed;}
+.tag.low{background:#441a1a;color:#fc8181;}
+
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.charts-row,.charts-row-2,.charts-row-3,.bnb-grid,.scenario-grid,.posterior-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🧠</div>
+    <div><h1>Bayesian Marketing Mix Model</h1><span>Portfolio Demo · PyMC-style Output · Simulated Data</span></div>
+  </div>
+  <div class="header-right">
+    <span class="badge">● MODEL OUTPUT</span>
+    <span class="model-badge">Framework: Bayesian · Channels: 6 · Period: FY 2025</span>
+    <a href="index.html" class="nav-link">← Portfolio Home</a>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('decomp',this)">📊 Revenue Decomposition</div>
+  <div class="tab" onclick="switchTab('posterior',this)">🔔 Posterior Distributions</div>
+  <div class="tab" onclick="switchTab('adstock',this)">📉 Adstock & Saturation</div>
+  <div class="tab" onclick="switchTab('search',this)">🔍 Brand vs NonBrand</div>
+  <div class="tab" onclick="switchTab('scenario',this)">🎯 Budget Optimizer</div>
+</div>
+
+<main>
+
+<!-- ══════════════════════════════ TAB 1: DECOMPOSITION -->
+<div id="tab-decomp" class="tab-content active">
+  <div class="kpi-row">
+    <div class="kpi-card orange"><div class="kpi-label">Total Revenue</div><div class="kpi-value">$15.89M</div><div class="kpi-sub">FY 2025 actuals</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Baseline Revenue</div><div class="kpi-value">$6.82M</div><div class="kpi-sub">42.9% of total</div><div class="kpi-ci">Organic / brand equity</div></div>
+    <div class="kpi-card purple"><div class="kpi-label">Media-Driven Revenue</div><div class="kpi-value">$9.07M</div><div class="kpi-sub">57.1% of total</div><div class="kpi-ci">90% CI: $8.4M – $9.7M</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Top Contributing Channel</div><div class="kpi-value">TV</div><div class="kpi-sub">$3.12M attributed</div><div class="kpi-ci">34.4% of media revenue</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Highest MROAS</div><div class="kpi-value">Brand SEM</div><div class="kpi-sub">8.4x marginal ROAS</div><div class="kpi-ci">But largely defensive</div></div>
+  </div>
+
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Revenue Decomposition Over Time</div><div class="card-subtitle">Stacked channel contributions to total revenue · baseline + media lift</div></div>
+        <span class="card-badge">Monthly · FY 2025</span>
+      </div>
+      <canvas id="decompTimeChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Channel Contribution Share</div><div class="card-subtitle">% of total media-driven revenue</div></div></div>
+      <canvas id="decompPieChart"></canvas>
+    </div>
+  </div>
+
+  <div class="charts-row-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Channel Attribution with Credible Intervals</div><div class="card-subtitle">Point estimate + 90% Bayesian credible interval per channel</div></div></div>
+      <div class="contrib-list" id="contribList"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Media vs Baseline Waterfall</div><div class="card-subtitle">Revenue build-up from baseline through each channel</div></div></div>
+      <canvas id="waterfallChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ TAB 2: POSTERIOR -->
+<div id="tab-posterior" class="tab-content">
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-header">
+      <div><div class="card-title">Posterior Distributions — Channel Coefficients</div><div class="card-subtitle">Each distribution represents the model's uncertainty about how much each channel drives revenue · wider = less certain · 90% credible intervals shown</div></div>
+      <span class="card-badge">Bayesian Inference</span>
+    </div>
+    <div class="posterior-grid" id="posteriorGrid"></div>
+  </div>
+  <div class="charts-row-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Coefficient Comparison</div><div class="card-subtitle">Posterior mean ± 90% credible interval · channels with wider bands have higher uncertainty</div></div></div>
+      <canvas id="posteriorForestChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Prior vs Posterior — TV</div><div class="card-subtitle">How the model updated beliefs after observing data</div></div></div>
+      <canvas id="priorPosteriorChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ TAB 3: ADSTOCK & SATURATION -->
+<div id="tab-adstock" class="tab-content">
+  <div class="charts-row-2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Adstock Decay Curves</div><div class="card-subtitle">Carry-over effect of spend — how long each channel's impact lingers after the week of spend</div></div></div>
+      <canvas id="adstockChart"></canvas>
+      <div class="adstock-note">
+        <strong style="color:#f6ad55">Reading this chart:</strong> TV retains ~60% of its effect after 2 weeks due to awareness carry-over. Brand SEM decays almost instantly — it primarily captures in-the-moment demand. Longer decay = more justification for sustained always-on spend vs burst campaigns.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Saturation Curves (Hill Function)</div><div class="card-subtitle">Diminishing returns — modeled response to incremental spend per channel</div></div></div>
+      <canvas id="saturationChart"></canvas>
+      <div class="adstock-note">
+        <strong style="color:#f6ad55">Reading this chart:</strong> The inflection point is where marginal returns start declining. Channels to the right of their current spend marker (▼) are over-saturated. Paid Social and NonBrand SEM have the most remaining headroom.
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div><div class="card-title">Adstock & Saturation Parameters</div><div class="card-subtitle">Model-estimated parameters per channel — posterior means with 90% credible intervals</div></div><span class="card-badge">PyMC Posterior Estimates</span></div>
+    <table style="width:100%;border-collapse:collapse;margin-top:4px;">
+      <thead><tr id="adstockTableHead"></tr></thead>
+      <tbody id="adstockTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ TAB 4: BRAND vs NONBRAND -->
+<div id="tab-search" class="tab-content">
+  <div class="kpi-row">
+    <div class="kpi-card orange"><div class="kpi-label">Total Paid Search Rev.</div><div class="kpi-value">$2.84M</div><div class="kpi-sub">90% CI: $2.6M–$3.1M</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Brand SEM</div><div class="kpi-value">$1.76M</div><div class="kpi-sub">62% of search revenue</div><div class="kpi-ci">mROAS: 8.4x</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">NonBrand SEM</div><div class="kpi-value">$1.08M</div><div class="kpi-sub">38% of search revenue</div><div class="kpi-ci">mROAS: 3.1x</div></div>
+    <div class="kpi-card purple"><div class="kpi-label">Brand Halo Effect</div><div class="kpi-value">~$0.38M</div><div class="kpi-sub">TV-driven brand lift</div><div class="kpi-ci">Estimated carry-over</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">True Incremental (NB)</div><div class="kpi-value">$0.92M</div><div class="kpi-sub">Demand generation</div><div class="kpi-ci">Excluding halo</div></div>
+  </div>
+
+  <div class="bnb-grid">
+    <div class="bnb-card">
+      <div class="bnb-title" style="color:#48bb78">🎯 Brand SEM</div>
+      <div class="bnb-metric">Attributed Revenue <span>$1.76M</span></div>
+      <div class="bnb-metric">Spend <span>$88K</span></div>
+      <div class="bnb-metric">Marginal ROAS <span style="color:#48bb78">8.4x</span></div>
+      <div class="bnb-metric">Adstock Decay (half-life) <span>~1.2 weeks</span></div>
+      <div class="bnb-metric">Saturation Level <span style="color:#f6ad55">High (near plateau)</span></div>
+      <div class="bnb-metric">Incrementality Assessment <span style="color:#fc8181">Largely Defensive</span></div>
+      <div class="bnb-metric">90% Credible Interval <span>$1.54M – $1.98M</span></div>
+      <div class="insight-box">
+        <strong>Key Insight:</strong> Brand SEM shows exceptional ROAS, but a significant portion captures demand created by TV and Paid Social rather than generating new demand. Geo holdout tests or ghost bidding experiments are recommended to isolate true incrementality. Reducing Brand SEM by 20% is unlikely to proportionally reduce revenue.
+      </div>
+    </div>
+    <div class="bnb-card">
+      <div class="bnb-title" style="color:#63b3ed">🔍 NonBrand SEM</div>
+      <div class="bnb-metric">Attributed Revenue <span>$1.08M</span></div>
+      <div class="bnb-metric">Spend <span>$108K</span></div>
+      <div class="bnb-metric">Marginal ROAS <span style="color:#63b3ed">3.1x</span></div>
+      <div class="bnb-metric">Adstock Decay (half-life) <span>~0.8 weeks</span></div>
+      <div class="bnb-metric">Saturation Level <span style="color:#48bb78">Moderate (headroom)</span></div>
+      <div class="bnb-metric">Incrementality Assessment <span style="color:#48bb78">Truly Incremental</span></div>
+      <div class="bnb-metric">90% Credible Interval <span>$0.88M – $1.28M</span></div>
+      <div class="insight-box">
+        <strong>Key Insight:</strong> NonBrand SEM is generating genuinely new demand — lower ROAS vs Brand is expected and not cause for concern. The model shows meaningful headroom before saturation. A 15–20% spend increase here is projected to yield an additional $140K–$180K in revenue with high posterior confidence.
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Brand vs NonBrand — Revenue Attribution Over Time</div><div class="card-subtitle">Monthly modeled contribution with credible bands</div></div></div>
+      <canvas id="bnbTimeChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Halo Effect — TV → Brand Search Lift</div><div class="card-subtitle">Weeks after TV flight — incremental brand search volume driven by TV adstock</div></div></div>
+      <canvas id="haloChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div><div class="card-title">Incrementality Framework</div><div class="card-subtitle">Decomposing Brand SEM revenue — how much is truly incremental vs captured from other channels</div></div></div>
+    <canvas id="incrementalityChart"></canvas>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ TAB 5: SCENARIO / OPTIMIZER -->
+<div id="tab-scenario" class="tab-content">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:18px;">
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:4px;">Budget Scenario Simulator</div>
+      <div style="font-size:12px;color:#718096;margin-bottom:20px;">Adjust channel spend allocations · model projects revenue impact using posterior response curves · total budget constraint: <span style="color:#f6ad55;font-weight:700" id="totalBudgetLabel">$546K</span></div>
+      <div class="slider-group" id="sliderGroup"></div>
+      <div style="margin-top:16px;padding:12px 16px;background:#1e2535;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;color:#718096;">Total Allocated</span>
+        <span style="font-size:14px;font-weight:700;" id="allocTotal">$0K</span>
+      </div>
+      <button onclick="resetScenario()" style="margin-top:12px;width:100%;background:transparent;border:1px solid #4a5568;color:#a0aec0;padding:9px;border-radius:8px;font-size:13px;cursor:pointer;">↺ Reset to Baseline</button>
+      <button onclick="applyOptimal()" style="margin-top:8px;width:100%;background:linear-gradient(90deg,#f6ad55,#ed8936);border:none;color:#1a1a1a;padding:9px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">⚡ Apply Model Optimal</button>
+    </div>
+    <div class="scenario-output">
+      <div class="scenario-kpi">
+        <div style="font-size:11px;color:#718096;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Projected Revenue</div>
+        <div class="scenario-kpi-val" id="projRevenue">$15.89M</div>
+        <div class="scenario-kpi-label">90% CI: <span id="projCI">$14.8M – $17.1M</span></div>
+        <div class="scenario-kpi-delta" id="projDelta">Baseline</div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:#a0aec0;margin-bottom:12px;padding-top:12px;border-top:1px solid #2d3748;">Projected Channel Revenue</div>
+      <div id="scenarioBarRows"></div>
+    </div>
+  </div>
+  <div class="charts-row-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Model-Optimal Allocation</div><div class="card-subtitle">Recommended spend vs current · maximize revenue at fixed budget</div></div></div>
+      <canvas id="optimalChart"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Revenue Gain by Reallocation</div><div class="card-subtitle">Projected lift from shifting budget to optimal · with 90% credible bands</div></div></div>
+      <canvas id="gainChart"></canvas>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ─── PALETTE ────────────────────────────────────────────────────────
+const CH={
+  'TV':             {col:'#f6ad55',icon:'📺'},
+  'Digital Display':{col:'#b794f4',icon:'🖥️'},
+  'Paid Social':    {col:'#f093fb',icon:'📱'},
+  'Brand SEM':      {col:'#48bb78',icon:'🎯'},
+  'NonBrand SEM':   {col:'#63b3ed',icon:'🔍'},
+  'Baseline':       {col:'#4a5568',icon:'📈'},
+};
+const CHNAMES=Object.keys(CH).filter(k=>k!=='Baseline');
+const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ─── MODEL DATA ─────────────────────────────────────────────────────
+// Revenue decomposition — monthly, by channel + baseline ($K)
+const DECOMP={
+  baseline:  [520,548,570,592,548,582,610,598,632,660,690,730],
+  tv:        [210,240,280,310,260,300,340,320,360,380,400,430],
+  digital:   [88, 102,112,124,110,126,140,132,148,158,166,176],
+  social:    [72, 84, 96, 108,96, 112,124,116,132,142,150,160],
+  brandSem:  [126,138,148,164,152,168,184,176,196,208,220,240],
+  nonbrandSem:[64,74, 82, 92, 84, 96, 108,100,112,120,128,140],
+};
+
+// Attribution summary ($M, point, lo, hi)
+const CONTRIB=[
+  {name:'TV',            rev:3.12, lo:2.71, hi:3.54, spend:0.42, roas:7.4},
+  {name:'Digital Display',rev:1.48, lo:1.18, hi:1.78, spend:0.14, roas:10.6},
+  {name:'Paid Social',   rev:1.39, lo:1.11, hi:1.68, spend:0.18, roas:7.7},
+  {name:'Brand SEM',     rev:1.76, lo:1.54, hi:1.98, spend:0.088,roas:20.0},
+  {name:'NonBrand SEM',  rev:1.08, lo:0.88, hi:1.28, spend:0.108,roas:10.0},
+  {name:'Baseline',      rev:6.82, lo:6.40, hi:7.24, spend:0,    roas:0},
+];
+
+// Posterior distributions (simplified histogram bins, mean, lo90, hi90)
+const POSTERIORS=[
+  {name:'TV',            mean:0.74, lo:0.58, hi:0.91, bins:[2,5,10,18,26,31,28,22,14,8,4,2]},
+  {name:'Digital Display',mean:0.38, lo:0.28, hi:0.48, bins:[3,8,16,26,32,30,22,14,8,4,2,1]},
+  {name:'Paid Social',   mean:0.34, lo:0.25, hi:0.44, bins:[4,9,18,28,34,29,20,12,6,3,1,1]},
+  {name:'Brand SEM',     mean:0.89, lo:0.77, hi:1.02, bins:[1,3,7,14,22,30,32,26,18,10,5,2]},
+  {name:'NonBrand SEM',  mean:0.28, lo:0.19, hi:0.37, bins:[5,12,22,32,34,28,18,10,5,2,1,0]},
+  {name:'Baseline',      mean:1.64, lo:1.54, hi:1.74, bins:[1,2,5,10,18,28,34,30,22,14,7,3]},
+];
+
+// Adstock decay (% remaining after N weeks)
+const ADSTOCK={
+  weeks:[0,1,2,3,4,5,6,7,8],
+  'TV':           [100,62,38,24,15,9,6,4,2],
+  'Digital Display':[100,30,9,3,1,0,0,0,0],
+  'Paid Social':  [100,42,18,8,3,1,0,0,0],
+  'Brand SEM':    [100,18,3,1,0,0,0,0,0],
+  'NonBrand SEM': [100,12,2,0,0,0,0,0,0],
+};
+
+// Saturation — Hill function outputs (spend index 0-10, revenue index)
+const SAT_SPEND=Array.from({length:11},(_,i)=>i*60); // 0-600K
+const SAT={
+  'TV':            [0,280,480,620,720,790,840,875,900,918,930],
+  'Digital Display':[0,110,180,230,265,290,308,320,328,334,338],
+  'Paid Social':   [0,130,215,278,325,360,386,404,416,425,432],
+  'Brand SEM':     [0,160,240,295,332,356,372,382,388,392,395],
+  'NonBrand SEM':  [0,100,172,228,272,305,330,348,361,371,378],
+};
+// Current spend markers (index into SAT_SPEND)
+const CUR_SPEND_IDX={'TV':7,'Digital Display':2,'Paid Social':3,'Brand SEM':1,'NonBrand SEM':2};
+
+// Adstock table data
+const ADSTOCK_TABLE=[
+  {ch:'TV',           decay:'Geometric',alpha:'0.62 [0.54–0.70]',halfLife:'~2.1 wk',L:'8 wk',  hill_k:'0.74',hill_n:'2.1',sat:'Moderate'},
+  {ch:'Digital Display',decay:'Geometric',alpha:'0.30 [0.22–0.38]',halfLife:'~0.7 wk',L:'4 wk', hill_k:'0.38',hill_n:'1.8',sat:'Low'},
+  {ch:'Paid Social',  decay:'Geometric',alpha:'0.42 [0.34–0.50]',halfLife:'~1.1 wk',L:'6 wk',  hill_k:'0.34',hill_n:'2.0',sat:'Low-Mod'},
+  {ch:'Brand SEM',    decay:'Geometric',alpha:'0.18 [0.12–0.24]',halfLife:'~0.3 wk',L:'3 wk',  hill_k:'0.89',hill_n:'3.2',sat:'High'},
+  {ch:'NonBrand SEM', decay:'Geometric',alpha:'0.12 [0.07–0.17]',halfLife:'~0.2 wk',L:'2 wk',  hill_k:'0.28',hill_n:'2.4',sat:'Moderate'},
+];
+
+// Brand vs NonBrand monthly
+const BNB_BRAND=   [126,138,148,164,152,168,184,176,196,208,220,240];
+const BNB_NONBRAND=[64, 74, 82, 92, 84, 96, 108,100,112,120,128,140];
+const BNB_CI_BRAND_LO=BNB_BRAND.map(v=>Math.round(v*0.875));
+const BNB_CI_BRAND_HI=BNB_BRAND.map(v=>Math.round(v*1.125));
+
+// Halo effect: TV → Brand search lift (weeks post flight)
+const HALO_WEEKS=['Week 0','Week 1','Week 2','Week 3','Week 4','Week 5','Week 6','Week 7'];
+const HALO_LIFT= [100,82,64,48,34,22,13,6];
+
+// Incrementality breakdown of Brand SEM ($M)
+const INCR=[
+  {label:'Truly Incremental',val:0.68,col:'#48bb78'},
+  {label:'TV Halo Capture',  val:0.38,col:'#f6ad55'},
+  {label:'Social Halo',      val:0.22,col:'#f093fb'},
+  {label:'Organic Capture',  val:0.28,col:'#4a5568'},
+  {label:'Cannibalized',     val:0.20,col:'#fc8181'},
+];
+
+// Scenario / optimizer
+const CHANNELS_OPT=[
+  {name:'TV',          cur:420, opt:380, roas:7.4,  minSpend:200,maxSpend:700},
+  {name:'Digital',     cur:140, opt:180, roas:10.6, minSpend:50, maxSpend:400},
+  {name:'Paid Social', cur:180, opt:220, roas:7.7,  minSpend:80, maxSpend:400},
+  {name:'Brand SEM',   cur:88,  opt:70,  roas:20.0, minSpend:40, maxSpend:200},
+  {name:'NonBrand SEM',cur:108, opt:150, roas:10.0, minSpend:60, maxSpend:300},
+];
+const TOTAL_BUDGET=CHANNELS_OPT.reduce((a,c)=>a+c.cur,0);
+let scenarioSpend=[...CHANNELS_OPT.map(c=>c.cur)];
+
+// ─── CHARTS ─────────────────────────────────────────────────────────
+let charts={};
+function kill(keys){(keys||Object.keys(charts)).forEach(k=>{if(charts[k]){charts[k].destroy();delete charts[k];}});}
+function gOpts(extra={}){return{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}},...(extra.plugins||{})},scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'},...(extra.xExtra||{})},y:{ticks:{color:'#718096'},grid:{color:'#2d3748'},...(extra.yExtra||{})}},...extra};}
+
+function renderDecomp(){
+  // Stacked area
+  const datasets=[
+    {label:'Baseline',    data:DECOMP.baseline,   backgroundColor:'rgba(74,85,104,0.7)',  fill:true,tension:0.4,pointRadius:0,borderWidth:0},
+    {label:'TV',          data:DECOMP.tv,          backgroundColor:'rgba(246,173,85,0.7)', fill:true,tension:0.4,pointRadius:0,borderWidth:0},
+    {label:'Digital',     data:DECOMP.digital,     backgroundColor:'rgba(183,148,244,0.7)',fill:true,tension:0.4,pointRadius:0,borderWidth:0},
+    {label:'Paid Social', data:DECOMP.social,      backgroundColor:'rgba(240,147,251,0.7)',fill:true,tension:0.4,pointRadius:0,borderWidth:0},
+    {label:'Brand SEM',   data:DECOMP.brandSem,    backgroundColor:'rgba(72,187,120,0.7)', fill:true,tension:0.4,pointRadius:0,borderWidth:0},
+    {label:'NonBrand SEM',data:DECOMP.nonbrandSem, backgroundColor:'rgba(99,179,237,0.7)', fill:true,tension:0.4,pointRadius:0,borderWidth:0},
+  ];
+  charts.decompTime=new Chart(document.getElementById('decompTimeChart'),{
+    type:'line',data:{labels:MO,datasets},
+    options:gOpts({plugins:{legend:{labels:{color:'#a0aec0',font:{size:10}}},tooltip:{mode:'index',intersect:false}},scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'}},y:{stacked:true,ticks:{color:'#718096',callback:v=>'$'+v+'K'},grid:{color:'#2d3748'}}}})
+  });
+
+  // Pie
+  const mediaContrib=CONTRIB.filter(c=>c.name!=='Baseline');
+  charts.decompPie=new Chart(document.getElementById('decompPieChart'),{
+    type:'doughnut',
+    data:{labels:mediaContrib.map(c=>c.name),datasets:[{data:mediaContrib.map(c=>c.rev),backgroundColor:mediaContrib.map(c=>CH[c.name].col),borderWidth:0}]},
+    options:{responsive:true,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#a0aec0',padding:10,font:{size:11}}}}}
+  });
+
+  // Contribution bars with CI
+  const maxRev=Math.max(...CONTRIB.map(c=>c.hi));
+  document.getElementById('contribList').innerHTML=CONTRIB.map(c=>{
+    const pct=(c.rev/maxRev*100).toFixed(1);
+    const loPct=(c.lo/maxRev*100).toFixed(1);
+    const hiPct=(c.hi/maxRev*100).toFixed(1);
+    const col=CH[c.name]?.col||'#4a5568';
+    const ciLeft=parseFloat(loPct);const ciWidth=parseFloat(hiPct)-parseFloat(loPct);
+    return`<div class="contrib-item">
+      <div class="contrib-meta">
+        <div class="contrib-name"><div class="contrib-dot" style="background:${col}"></div>${c.name}</div>
+        <div class="contrib-vals">$${c.rev}M &nbsp;<span style="color:#718096;font-size:10px">[$${c.lo}M – $${c.hi}M]</span>${c.roas?` &nbsp;· <span style="color:${col};font-weight:700">${c.roas}x ROAS</span>`:''}</div>
+      </div>
+      <div class="contrib-track">
+        <div class="contrib-fill" style="width:${pct}%;background:${col}">
+          <div class="contrib-ci" style="left:${(ciLeft/parseFloat(pct)*100).toFixed(1)}%;width:${(ciWidth/parseFloat(pct)*100).toFixed(1)}%"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Waterfall
+  const wfLabels=['Baseline',...CONTRIB.filter(c=>c.name!=='Baseline').map(c=>c.name),'Total'];
+  const wfBase=[0,...CONTRIB.filter(c=>c.name!=='Baseline').reduce((acc,c,i)=>{acc.push((acc[i]||0)+CONTRIB.find(x=>x.name==='Baseline').rev+(i>0?CONTRIB.filter(c=>c.name!=='Baseline').slice(0,i).reduce((s,x)=>s+x.rev,0):0));return acc;},[])];
+  const wfVals=[6.82,...CONTRIB.filter(c=>c.name!=='Baseline').map(c=>c.rev),15.89];
+  const wfColors=[CH['Baseline'].col,...CONTRIB.filter(c=>c.name!=='Baseline').map(c=>CH[c.name].col),'#f6ad55'];
+  charts.waterfall=new Chart(document.getElementById('waterfallChart'),{
+    type:'bar',
+    data:{labels:wfLabels,datasets:[{data:wfVals,backgroundColor:wfColors+'cc',borderRadius:4,borderColor:wfColors,borderWidth:1}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{ticks:{color:'#718096',callback:v=>'$'+v+'M'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+function renderPosterior(){
+  // Posterior distribution mini-charts
+  document.getElementById('posteriorGrid').innerHTML=POSTERIORS.map((p,i)=>{
+    const col=CH[p.name]?.col||'#a0aec0';
+    const maxBin=Math.max(...p.bins);
+    const bars=p.bins.map((b,bi)=>`<div class="dist-bar" style="height:${(b/maxBin*100).toFixed(0)}%;background:${col};opacity:${bi>=3&&bi<=8?1:0.4}"></div>`).join('');
+    return`<div class="posterior-card">
+      <div class="posterior-title" style="color:${col}">${CH[p.name]?.icon||''} ${p.name}</div>
+      <div class="posterior-stats">
+        <div class="pstat">Mean<span>${p.mean}</span></div>
+        <div class="pstat">Lo 90%<span>${p.lo}</span></div>
+        <div class="pstat">Hi 90%<span>${p.hi}</span></div>
+        <div class="pstat">Width<span>${(p.hi-p.lo).toFixed(2)}</span></div>
+      </div>
+      <div class="dist-bar-row">${bars}</div>
+      <div class="credible-band"><span>← Lower</span><span style="color:${col}">90% CI: [${p.lo} – ${p.hi}]</span><span>Higher →</span></div>
+    </div>`;
+  }).join('');
+
+  // Forest plot
+  charts.forest=new Chart(document.getElementById('posteriorForestChart'),{
+    type:'bar',
+    data:{
+      labels:POSTERIORS.map(p=>p.name),
+      datasets:[
+        {label:'Posterior Mean',data:POSTERIORS.map(p=>p.mean),backgroundColor:POSTERIORS.map(p=>CH[p.name]?.col||'#a0aec0'),borderRadius:4,barThickness:20},
+        {label:'90% CI Range',data:POSTERIORS.map(p=>p.hi-p.lo),backgroundColor:POSTERIORS.map(p=>(CH[p.name]?.col||'#a0aec0')+'44'),borderRadius:4,barThickness:8},
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Prior vs Posterior — TV
+  const priorBins=[2,4,7,11,16,20,22,20,16,11,7,4];
+  const postBins=POSTERIORS[0].bins;
+  charts.priorPost=new Chart(document.getElementById('priorPosteriorChart'),{
+    type:'line',
+    data:{labels:Array.from({length:12},(_,i)=>(0.3+i*0.06).toFixed(2)),
+      datasets:[
+        {label:'Prior (weakly informative)',data:priorBins,borderColor:'#718096',backgroundColor:'rgba(113,128,150,0.1)',tension:0.4,fill:true,pointRadius:0},
+        {label:'Posterior (after data)',data:postBins,borderColor:CH['TV'].col,backgroundColor:CH['TV'].col+'22',tension:0.4,fill:true,pointRadius:0,borderWidth:2.5}
+      ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0'}}},
+      scales:{x:{title:{display:true,text:'TV Coefficient',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'Density',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+function renderAdstock(){
+  // Decay curves
+  charts.adstock=new Chart(document.getElementById('adstockChart'),{
+    type:'line',
+    data:{labels:ADSTOCK.weeks.map(w=>'Week '+w),
+      datasets:CHNAMES.map(ch=>({label:ch,data:ADSTOCK[ch],borderColor:CH[ch].col,backgroundColor:'transparent',tension:0.4,pointRadius:3,borderWidth:2}))},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'% Effect Remaining',color:'#718096'},ticks:{color:'#718096',callback:v=>v+'%'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Saturation curves
+  charts.saturation=new Chart(document.getElementById('saturationChart'),{
+    type:'line',
+    data:{labels:SAT_SPEND.map(v=>'$'+v+'K'),
+      datasets:CHNAMES.map(ch=>({label:ch,data:SAT[ch],borderColor:CH[ch].col,backgroundColor:'transparent',tension:0.4,pointRadius:0,borderWidth:2}))},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096',maxTicksLimit:8},grid:{color:'#2d3748'}},
+              y:{title:{display:true,text:'Indexed Revenue Response',color:'#718096'},ticks:{color:'#718096'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Table
+  const thStyle='font-size:11px;font-weight:600;color:#718096;text-transform:uppercase;padding:10px 12px;text-align:left;border-bottom:1px solid #2d3748;';
+  const tdStyle='font-size:12px;color:#cbd5e0;padding:10px 12px;border-bottom:1px solid #1e2535;';
+  document.getElementById('adstockTableHead').innerHTML=
+    ['Channel','Decay Type','Alpha (decay rate)','Half-life','Max Lag','Hill k','Hill n','Saturation']
+    .map(h=>`<th style="${thStyle}">${h}</th>`).join('');
+  document.getElementById('adstockTableBody').innerHTML=ADSTOCK_TABLE.map(r=>`<tr>
+    <td style="${tdStyle}font-weight:700;color:${CH[r.ch]?.col||'#e2e8f0'}">${CH[r.ch]?.icon||''} ${r.ch}</td>
+    <td style="${tdStyle}">${r.decay}</td><td style="${tdStyle}">${r.alpha}</td>
+    <td style="${tdStyle}">${r.halfLife}</td><td style="${tdStyle}">${r.L}</td>
+    <td style="${tdStyle}">${r.hill_k}</td><td style="${tdStyle}">${r.hill_n}</td>
+    <td style="${tdStyle}"><span class="tag ${r.sat==='High'?'low':r.sat.startsWith('Low')?'high':'med'}">${r.sat}</span></td>
+  </tr>`).join('');
+}
+
+function renderSearch(){
+  // B vs NB over time with error bands
+  charts.bnbTime=new Chart(document.getElementById('bnbTimeChart'),{
+    type:'line',
+    data:{labels:MO,datasets:[
+      {label:'Brand SEM',data:BNB_BRAND,borderColor:CH['Brand SEM'].col,backgroundColor:CH['Brand SEM'].col+'22',tension:0.4,fill:true,pointRadius:3,borderWidth:2},
+      {label:'Brand SEM CI Lo',data:BNB_CI_BRAND_LO,borderColor:'transparent',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:0,borderDash:[3,3]},
+      {label:'Brand SEM CI Hi',data:BNB_CI_BRAND_HI,borderColor:CH['Brand SEM'].col+'66',backgroundColor:CH['Brand SEM'].col+'11',tension:0.4,fill:'-2',pointRadius:0,borderDash:[3,3]},
+      {label:'NonBrand SEM',data:BNB_NONBRAND,borderColor:CH['NonBrand SEM'].col,backgroundColor:CH['NonBrand SEM'].col+'22',tension:0.4,fill:true,pointRadius:3,borderWidth:2},
+    ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11},filter:l=>!l.text.includes('CI')}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{color:'#2d3748'}},y:{ticks:{color:'#718096',callback:v=>'$'+v+'K'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Halo chart
+  charts.halo=new Chart(document.getElementById('haloChart'),{
+    type:'bar',
+    data:{labels:HALO_WEEKS,datasets:[{label:'Brand Search Lift (%)',data:HALO_LIFT,backgroundColor:HALO_LIFT.map(v=>v>50?CH['TV'].col+'cc':v>20?CH['TV'].col+'88':CH['TV'].col+'44'),borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{title:{display:true,text:'% Lift vs Non-Flight Weeks',color:'#718096'},ticks:{color:'#718096',callback:v=>v+'%'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Incrementality stacked
+  charts.incr=new Chart(document.getElementById('incrementalityChart'),{
+    type:'bar',
+    data:{labels:['Brand SEM Revenue Decomposition ($M)'],datasets:INCR.map(i=>({label:i.label,data:[i.val],backgroundColor:i.col+'cc',borderRadius:0}))},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{stacked:true,ticks:{color:'#718096',callback:v=>'$'+v+'M'},grid:{color:'#2d3748'}},y:{stacked:true,ticks:{color:'#718096'},grid:{display:false}}}}
+  });
+}
+
+function renderScenario(){
+  document.getElementById('totalBudgetLabel').textContent='$'+TOTAL_BUDGET+'K';
+  // Build sliders
+  document.getElementById('sliderGroup').innerHTML=CHANNELS_OPT.map((c,i)=>`
+    <div class="slider-item">
+      <div class="slider-label">${CH[c.name]?.icon||''} ${c.name}<span id="sval-${i}">$${c.cur}K</span></div>
+      <input type="range" min="${c.minSpend}" max="${c.maxSpend}" step="5" value="${c.cur}" oninput="updateScenario(${i},this.value)" id="slider-${i}">
+    </div>`).join('');
+  updateScenarioUI();
+
+  // Optimal allocation chart
+  charts.optimal=new Chart(document.getElementById('optimalChart'),{
+    type:'bar',
+    data:{labels:CHANNELS_OPT.map(c=>c.name),
+      datasets:[
+        {label:'Current ($K)',data:CHANNELS_OPT.map(c=>c.cur),backgroundColor:'rgba(160,174,192,0.4)',borderRadius:4},
+        {label:'Model Optimal ($K)',data:CHANNELS_OPT.map(c=>c.opt),backgroundColor:CHANNELS_OPT.map(c=>c.opt>c.cur?'rgba(72,187,120,0.7)':'rgba(252,129,129,0.7)'),borderRadius:4}
+      ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#a0aec0',font:{size:11}}}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{ticks:{color:'#718096',callback:v=>'$'+v+'K'},grid:{color:'#2d3748'}}}}
+  });
+
+  // Gain chart
+  const gains=CHANNELS_OPT.map(c=>parseFloat(((c.opt-c.cur)*c.roas/1000).toFixed(2)));
+  charts.gain=new Chart(document.getElementById('gainChart'),{
+    type:'bar',
+    data:{labels:CHANNELS_OPT.map(c=>c.name),
+      datasets:[{label:'Projected Revenue Gain ($M)',data:gains,backgroundColor:gains.map(g=>g>=0?'rgba(72,187,120,0.7)':'rgba(252,129,129,0.7)'),borderRadius:4}]},
+    options:{responsive:true,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#718096'},grid:{display:false}},y:{ticks:{color:'#718096',callback:v=>(v>=0?'+':'')+v+'M'},grid:{color:'#2d3748'}}}}
+  });
+}
+
+function updateScenario(idx,val){
+  scenarioSpend[idx]=parseInt(val);
+  document.getElementById('sval-'+idx).textContent='$'+val+'K';
+  updateScenarioUI();
+}
+
+function updateScenarioUI(){
+  const total=scenarioSpend.reduce((a,b)=>a+b,0);
+  document.getElementById('allocTotal').textContent='$'+total+'K';
+  document.getElementById('allocTotal').style.color=total>TOTAL_BUDGET*1.1?'#fc8181':total<TOTAL_BUDGET*0.9?'#f6ad55':'#48bb78';
+
+  // Projected revenue using simple response curve (diminishing returns)
+  const baseRev=6.82;
+  const mediaRev=CHANNELS_OPT.reduce((sum,c,i)=>{
+    const spendRatio=scenarioSpend[i]/c.cur;
+    const diminished=Math.pow(spendRatio,0.65); // diminishing returns exponent
+    return sum+(c.cur*c.roas/1000)*diminished;
+  },0);
+  const projRev=(baseRev+mediaRev);
+  const baseline=15.89;
+  const delta=projRev-baseline;
+  document.getElementById('projRevenue').textContent='$'+projRev.toFixed(2)+'M';
+  document.getElementById('projCI').textContent='$'+(projRev*0.93).toFixed(2)+'M – $'+(projRev*1.08).toFixed(2)+'M';
+  const dEl=document.getElementById('projDelta');
+  dEl.textContent=delta>=0?'▲ +$'+delta.toFixed(2)+'M vs baseline':'▼ $'+Math.abs(delta).toFixed(2)+'M vs baseline';
+  dEl.className='scenario-kpi-delta '+(delta>=0?'up':'down');
+
+  // Bar rows
+  document.getElementById('scenarioBarRows').innerHTML=CHANNELS_OPT.map((c,i)=>{
+    const spendRatio=scenarioSpend[i]/c.cur;
+    const newRev=(c.cur*c.roas/1000)*Math.pow(spendRatio,0.65);
+    const curRev=(c.cur*c.roas/1000);
+    const col=CH[c.name]?.col||'#a0aec0';
+    const maxRev=Math.max(newRev,curRev,0.01);
+    return`<div class="scenario-bar-row">
+      <div class="scenario-bar-label">${CH[c.name]?.icon||''} ${c.name}</div>
+      <div class="scenario-bar-wrap">
+        <div class="scenario-bar-cur" style="width:${(curRev/maxRev*50).toFixed(0)}%;background:${col}"></div>
+        <div class="scenario-bar-new" style="width:${(newRev/maxRev*50).toFixed(0)}%;background:${col}"></div>
+      </div>
+      <div class="scenario-bar-val" style="color:${col}">$${newRev.toFixed(2)}M</div>
+    </div>`;
+  }).join('');
+}
+
+function resetScenario(){
+  scenarioSpend=CHANNELS_OPT.map(c=>c.cur);
+  CHANNELS_OPT.forEach((c,i)=>{
+    const s=document.getElementById('slider-'+i);
+    if(s){s.value=c.cur;document.getElementById('sval-'+i).textContent='$'+c.cur+'K';}
+  });
+  updateScenarioUI();
+}
+
+function applyOptimal(){
+  scenarioSpend=CHANNELS_OPT.map(c=>c.opt);
+  CHANNELS_OPT.forEach((c,i)=>{
+    const s=document.getElementById('slider-'+i);
+    if(s){s.value=c.opt;document.getElementById('sval-'+i).textContent='$'+c.opt+'K';}
+  });
+  updateScenarioUI();
+}
+
+// ─── TAB SWITCHING ──────────────────────────────────────────────────
+const TAB_RENDERERS={decomp:renderDecomp,posterior:renderPosterior,adstock:renderAdstock,search:renderSearch,scenario:renderScenario};
+const renderedTabs=new Set();
+
+function switchTab(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(!renderedTabs.has(tab)){TAB_RENDERERS[tab]();renderedTabs.add(tab);}
+}
+
+// Init
+renderDecomp();
+renderedTabs.add('decomp');
+</script>
+</body>
+</html>
